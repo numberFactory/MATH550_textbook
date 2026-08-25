@@ -1,0 +1,62 @@
+\documentclass{tstextbook}
+
+%---------------------------------------------------------------------------
+% Added packages
+%---------------------------------------------------------------------------
+\usepackage{wrapfig}
+\usepackage{framed}
+\usepackage{soul}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage{comment}
+\usepackage{mathrsfs}
+\usepackage{enumitem}
+\usepackage{physics}
+\usepackage{amsmath}
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+
+%---------------------------------------------------------------------------
+% Textbook contents
+%---------------------------------------------------------------------------
+\makeindex
+
+\begin{document}
+
+\tsbook{Numerical Solutions to \\ Partial Differential Equations}   % Textbook name
+       {| Brennan Sprinkle and Rachel Bertaud |} % Author(s)
+       {Rachel Bertaud}                                    % Cover Artist
+       {2026}                                               % Publication year
+
+%---------------------------------------------------------------------------
+% Chapters
+%---------------------------------------------------------------------------
+
+\include{Plots/text}  
+
+
+% Use \include{} to include any additional chapters here.
+
+%---------------------------------------------------------------------------
+% Appendix
+%---------------------------------------------------------------------------
+\appendix
+
+%---------------------------------------------------------------------------
+% Bibliography
+%---------------------------------------------------------------------------
+\addcontentsline{toc}{chapter}{\textcolor{tsorange2}{Bibliography}}
+\printbibliography{}
+
+%---------------------------------------------------------------------------
+% Index
+%---------------------------------------------------------------------------
+\addcontentsline{toc}{chapter}{\textcolor{tsorange2}{Index}}
+\printindex{}
+
+%---------------------------------------------------------------------------
+% Last Page Blank
+%---------------------------------------------------------------------------
+\thispagestyle{empty}
+
+\end{document}
