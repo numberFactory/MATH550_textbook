@@ -78,49 +78,6 @@ Consider the presentation of data in Figure~\ref{fig:lineExample}. The figure is
 \end{figure}
 
 
-
-
-% The second row showcases the same data presented in an effective and accessible way. The data is properly labeled, concisely describing the type of data and the different lines being presented. The addition of the star and circle marker makes the plot accessible when color is not available. Figure~\ref{fig:lineExample}\emph{(c)} showcases the same colors as \emph{(a)} for the respective curves but mimics protanopia (red-green colorblindness), highlighting the need to select colors that are distinct and contrasting. Increasing the linewidth of plotted curves, axes, and legend boxes effectively contrasts the information with the white background and stands out to the reader. Notice the font now matches standard \LaTeX, ensuring typeset continuity throughout the document.
-
-
-
-
-
-% \begin{figure}[!ht]
-% \begin{framed}
-%   % ---- Row 1 ----
-%   (\emph{a})
-%   \hspace*{7cm}
-%   (\emph{b})\\
-%   \hspace*{5mm}
-%   \includegraphics[trim = 0mm 0mm 0mm 0mm,clip,
-%   width=7.0cm, page=4]{Plots/images/fields.pdf}
-%   \includegraphics[trim = 0mm 0mm 0mm 0mm,clip,
-%   width=7.0cm, page=6]{Plots/images/fields.pdf}\\[2mm]
-%   % ---- Row 2 ----
-%   (\emph{c})
-%   \hspace*{7cm}
-%   (\emph{d})\\
-%   \hspace*{5mm}
-%   \includegraphics[trim = 0mm 0mm 0mm 0mm,clip,
-%   width=7.0cm, page=2]{Plots/images/fields.pdf}
-%   \includegraphics[trim = 0mm 0mm 0mm 0mm,clip,
-%   width=7.0cm, page=3]{Plots/images/fields.pdf}\\[-7mm]
-%     % ---- Row 3 ----
-%   (\emph{c})
-%   \hspace*{7cm}
-%   (\emph{d})\\
-%   \hspace*{5mm}
-%   \includegraphics[trim = 0mm 0mm 0mm 0mm,clip,
-%   width=7.0cm, page=2]{Plots/images/fields.pdf}
-%   \includegraphics[trim = 0mm 0mm 0mm fields,clip,
-%   width=7.0cm, page=3]{Plots/images/lines.pdf}\\[-7mm]
-%   \caption{Three rows of some field, where each row represents a different colormap and each column represents different views of color. Row }
-%   \label{fig:lineExample}
-%   \vspace*{2mm}
-% \end{framed}
-% \end{figure}
-
 \clearpage 
 \newpage
 \subsection{Field Plots}
@@ -139,11 +96,6 @@ Plotting fields is an effective way to understand what a system is doing at an i
 \end{figure}
 
 A colormap is a gradient of color, as seen in Figure~\ref{fig:turboCM}. Colormaps map numerical values of a field to colors along its gradient, which lets us visualize how the field changes across space and time. Different styles of colormap suit different applications; here we consider \textit{sequential} and \textit{divergent} maps.
-
-
-Sequential colormaps change monotonically from one end to the other, like the \textit{blues} map at the top of Figure~\ref{fig:turboCM} which runs from a dark color to a bright one. These maps are effective for fields where it is important to see growth or subtle changes in magnitude across the field.
-
-Divergent colormaps change monotonically from each end toward the middle, where two dark colors meet at a bright center — as in the \textit{curl} map shown at the bottom of Figure~\ref{fig:turboCM}. \textit{curl} is from cmocean by \textcite{cmoceanRep} . They are effective for fields centered around some mean value since they highlight variation away from that center and make the largest deviations stand out.
 
 
 
@@ -175,22 +127,17 @@ Divergent colormaps change monotonically from each end toward the middle, where 
 \end{figure}
 
 
+Sequential colormaps change monotonically from one end to the other, like the \textit{blues} map at the top of Figure~\ref{fig:turboCM} which runs from a dark color to a bright one. These maps are effective for fields where it is important to see growth or subtle changes in magnitude across the field.
+
+Divergent colormaps change monotonically from each end toward the middle, where two dark colors meet at a bright center — as in the \textit{curl} map shown at the bottom of Figure~\ref{fig:turboCM}. \textit{curl} is from cmocean by \textcite{cmoceanRep} . They are effective for fields centered around some mean value since they highlight variation away from that center and make the largest deviations stand out.
 
 
-%When $t=0$, a drop fell in the center, sending waves of a circular pattern away from the point of impact. 
+Consider the two-dimensional fields shown in Figure~\ref{fig:exampleFields}. The field in column 1 is considered sequential, as the data grows monotonically to peaks across the field. The field is column two is divergent, with discontinuous oscillations about $f(x,y) = 0$. A divergent color map clearly shows where these oscillations are, and the general pattern they have across the field. This pattern is much more apparent in the two-dimensional (2D) plot (2b), where as the three-dimensional (3D) plot (2b) does not accurately reflect the field, as much of the field at the center is hidden by the large magnitude oscillations along the $x$ axis. When plotting in 3D, it is important to consider the angle at which the data is plot, as the surface can hid information when certain angles are chosen. Generally, it is best to plot in 3D.
 
-
-
-Consider the two-dimensional fields shown in Figure~\ref{fig:exampleFields}. The field in column 1 is considered sequential, as the data grows monotonically to peaks across the field. The field is column two is divergent, with discontinuous oscillations about $f(x,y) = 0$. A divergent color map clearly shows where these oscillations are, and the general pattern they have across the field. This pattern is much more apparent in the two-dimensional (2D) plot (2b), where as the three-dimensional (3D) plot (2b) does not accurately reflect the field, as much of the field at the center is hidden by the large magnitude oscillations along the $x$ axis. When plotting in 3D, it is important to consider the angle at which the data is plot, as the surface can hid information when certain angles are chosen. Generally, it is the best choice to plot in 2D.
-
-
-
-% What then makes a good colormap and are there standard choices that are both effective and accessible? To answer this, we consider Figure~\ref{fig:fieldsPlots}, which showcases three colormaps as respective rows in both full color (column one) and grayscale (column two). We will discuss \textit{ice}, \textit{jet}, and \textit{turbo}.
+Some popular colormaps are considered both sequential and diverging, such as \textit{turbo}. 
 
 
 
-\clearpage 
-\clearpage
 \begin{figure}[!ht]
 \begin{framed}
 \centering
@@ -255,7 +202,6 @@ badCols = np.array([
     [0, 0, 0.9],        # blue
 ])
 
-
 cols = np.array([
     [67/255, 179/255, 174/255],   # teal (marker edge/line 1)
     [136/255, 216/255, 192/255],  # light green (marker face 1)
@@ -316,7 +262,7 @@ ax.set_xscale('log')
 ax.set_yscale('log')
 ax.grid() # sets major grid lines - can have settings here
 
-# plt.show()  # uncomment to view interactively
+plt.show()  
 
 ## note: fig will not save if plt.show() is before plt.savefig(...)!!!!
 # plt.savefig("linePlotExample.pdf", dpi=800)  # uncomment to export figure (dpi sets raster resolution)
@@ -333,6 +279,8 @@ ax.grid() # sets major grid lines - can have settings here
 import matplotlib.pyplot as plt
 # numerics package import
 import numpy as np
+# import nicer colormaps
+import cmocean
 
 # LaTeX rendering in Latin Modern
 plt.rcParams['text.usetex'] = True
@@ -345,7 +293,7 @@ x = np.arange(-np.pi, np.pi + dx, dx)  # + dx includes endpoint
 y = x
 X, Y = np.meshgrid(x, y) # creates mesh of x and y (2D fields)
 
-# diverging colormap example (use cmap='PiYG' in pcolormesh)
+# diverging colormap example (use cmap='cmo.curl' in pcolormesh)
 ###########################################################
 R = np.sqrt(X**2 + Y**2)
 f = Y * np.sin(2.0 * R**2)
@@ -357,6 +305,7 @@ f = Y * np.sin(2.0 * R**2)
 ###########################################################
 
 fs = 35  # set font size variable
+cm = 'cmo.curl' # 'Blues'
 
 fig, ax = plt.subplots(figsize=(12, 9))  # set figure size
 
@@ -364,7 +313,7 @@ ax.set_aspect('equal')  # force square aspect ratio
 
 # pseudocolor plot of f across X and Y
 # gouraud shading interpolates between cells (no mesh lines)
-pc = ax.pcolormesh(X, Y, f, cmap='PiYG', shading='gouraud')
+pc = ax.pcolormesh(X, Y, f, cmap=cm, shading='gouraud')
 
 ax.set_xlabel('$x$', fontsize=fs)  # label x-axis in latex
 ax.set_ylabel('$y$', fontsize=fs)  # label y-axis in latex
@@ -384,7 +333,6 @@ cb.set_label('Field Magnitude', fontsize=fs)  # label colorbar
 # tick locations and latex labels
 ticks = [-np.pi, -np.pi/2, 0, np.pi/2, np.pi]
 tickLabel = ['$-\\pi$', '$-\\pi/2$', '$0$', '$\\pi/2$', '$\\pi$']
-
 ax.set_xticks(ticks)           # set x tick locations
 ax.set_yticks(ticks)           # set y tick locations
 ax.set_xticklabels(tickLabel)  # set x tick labels to tex strings
@@ -404,7 +352,6 @@ ax.plot_surface(X, Y, f, cmap=cm)
 
 fs = 0.8*fs
 
-
 ticks = [-np.pi, -np.pi/2, 0, np.pi/2, np.pi]  # defining location of ticks
 tickLabel = ['$-\\pi$', '$-\\pi/2$', '$0$', '$\\pi/2$', '$\\pi$']  # defining labels for ticks
 
@@ -413,15 +360,14 @@ ax.set_yticks(ticks)            # set y ticks to ticks array
 ax.set_xticklabels(tickLabel)   # set labels to tex strings in tickLabel
 ax.set_yticklabels(tickLabel)   # set labels to tex strings in tickLabel
 
-
 ax.set_xlabel('$x$', fontsize=fs, labelpad=20)  # label x-axis as x in latex
 ax.set_ylabel('$y$', fontsize=fs, labelpad=20)
 ax.set_ylabel('$f(x,y)$', fontsize=fs, labelpad=20)
 
 for spine in ax.spines.values():   # set axes linewidth
     spine.set_linewidth(3)
+    
 ax.tick_params(width=3, labelsize=fs)  # set tick width and font size
-
 axesLims = [-np.pi - 0.3, np.pi + 0.3]  # define axes limits
 ax.set_xlim(axesLims)       # set x axis limits
 ax.set_ylim(axesLims)       # set y axis limits
@@ -448,7 +394,6 @@ y2 = 2.0*dxs.^2 + 16.0*dxs.^4;     % second order error curve
 
 % reference lines (order one ref. is just dxs itself)
 ref2 = dxs.^2;  % order two reference line
-
 fs = 50;  % set font size variable
 
 % rgb colors, defined 0-1
@@ -485,7 +430,6 @@ plot(dxs(1:3:end), y1(1:3:end), '-o', ...
     'MarkerEdgeColor', cols(1,:), ...  % set marker outline color
     'MarkerFaceColor', cols(2,:), ...  % set marker fill color
     'DisplayName', 'first order')      % set legend entry
-
 plot(dxs(1:3:end), y2(1:3:end), '-p', 'Color', cols(4,:), ...
     'LineWidth', 2, 'MarkerSize', 40, ...
     'MarkerEdgeColor', cols(4,:), 'MarkerFaceColor', cols(3,:), ...
@@ -510,13 +454,10 @@ grid on  % turn on major grid
 xlabel('$$\Delta x$$  (mm)', ...  % label x-axis in latex
     'Interpreter', 'latex', ...   % interpret label with latex
     'FontSize', fs);              % set font size of label
-
 ylabel('Error', 'Interpreter', 'latex', 'FontSize', fs);
-
 legend('FontSize', 0.75*fs, ...   % set legend font size
     'Location', 'southeast', ...  % legend bottom right
     'Interpreter', 'latex');      % interpret with latex
-
 title('Convergence Plot', ...    % set plot title
     'Interpreter', 'latex', ...  % interpret title in latex
     'FontSize', fs);             % set font size of title
@@ -530,6 +471,7 @@ saveas(fig, 'convergencePlot.pdf')  % export figure as a pdf
 
 \end{lstlisting}
 
+\newpage 
 {
 \centering
 \subsubsection{Fields in MATLAB}
@@ -540,8 +482,6 @@ saveas(fig, 'convergencePlot.pdf')  % export figure as a pdf
 % point matlab to any cmap directories you download
 % needed for curl and blues
 addpath('<path to directory>/cmap/')
-
-cm = curl(256);
 
 % generate data
 dx = 0.01;
@@ -557,19 +497,17 @@ f = Y.*sin(2.0*R.^2);
 
 % sequential colormap example (use colormap('Blues'))
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% f = R .* 1.3.^(1.01*(abs(abs(X).*abs(Y) - 2*pi)) + pi/2);
+f = R .* 1.3.^(1.01*(abs(abs(X).*abs(Y) - 2*pi)) + pi/2);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
- % set colormap to match the example above
-
 fs = 35;  % set font size variable
+cm = blues(256);  % set colormap to match the example above
 
 fig = figure( ...
     "Theme", "light", ...               % plot light even in dark mode
     'Position', [100, 100, 1200, 900]); % match figsize(12,9)
 
 hold on  % ensures all following plot commands go onto fig
-
 daspect([1 1 1])  % force square aspect ratio
 
 % pseudocolor plot of f across X and Y
@@ -577,16 +515,13 @@ pc = pcolor(X, Y, f);
 colormap(cm);
 shading interp     % interpolate between cells (matches gouraud)
 
-
 xlabel('$$x$$', ...              % label x-axis in latex
     'Interpreter', 'latex', ...  % interpret label with latex
     'FontSize', fs);             % set font size of label
-
 ylabel('$$y$$', 'Interpreter', 'latex', 'FontSize', fs);
 
 ax = gca;  % pull the current axes
 set(ax, 'LineWidth', 3, 'FontSize', fs)  % set axes width, font size
-
 axesLims = [-pi, pi];  % define axes limits
 xlim(axesLims)         % set x axis limits
 ylim(axesLims)         % set y axis limits
@@ -601,7 +536,6 @@ ylabel(cb, 'Field Magnitude', ...  % label colorbar
 ticks = [-pi, -pi/2, 0, pi/2, pi];
 tickLabel = {'$$-\pi$$', '$$-\pi/2$$', '$$0$$', ...
              '$$\pi/2$$', '$$\pi$$'};
-
 ax.TickLabelInterpreter = 'latex';  % set tick interpreter to latex
 ax.XTick = ticks;                   % set x tick locations
 ax.YTick = ticks;                   % set y tick locations
@@ -642,19 +576,16 @@ ax.YTickLabel = tickLabel;          % set y tick labels to tex strings
 xlabel('$$x$$', ...              % label x-axis in latex
     'Interpreter', 'latex', ...  % interpret label with latex
     'FontSize', fs);             % set font size of label
-
 ylabel('$$y$$', 'Interpreter', 'latex', 'FontSize', fs);
 zlabel('$$f(x,y)$$', 'Interpreter', 'latex', 'FontSize', fs);
 
 set(ax, 'LineWidth', 3, 'FontSize', fs)  % set axes width, font size
-
 axesLims = [-pi - 0.3, pi + 0.3];  % define axes limits (small margin)
 xlim(axesLims)                     % set x axis limits
 ylim(axesLims)                     % set y axis limits
 
 %% note: exports whatever figure is current!
 % exportgraphics(fig, 'seq3D.pdf', 'Resolution', 800)
-
 \end{lstlisting}
 
 
