@@ -14,11 +14,11 @@ Visual communication is effective when the reader immediately understands what i
 
 For visual communication to be completely accessible, no reader should be at a disadvantage due to physical abilities or technological access. Colorblindness can make data difficult to discern if the colors do not contrast, especially when considering those who are completely colorblind or when work is printed in black and white. Efforts to use more than color, such as markers, and to select contrasting colors ensure general readability no matter the case. Assistive technology is capable of converting visual communication to non-visual communication by reading alternative text of images. When publicizing work, it is important to include and use descriptive alternative text so that any visual communication can be understood without seeing the image or figure. 
 
-The next two subsections will discuss class standards for visual communication for line and field plots. Code used to produce plots seen in Figures~\ref{fig:badLines!} and \ref{fig:exampField} is provided in Section~\ref{chpt:figCode}.
+The next two subsections will discuss class standards for visual communication for line and field plots. Code used to produce plots seen in Figures~\ref{fig:lineExample} and \ref{fig:exampleFields} is provided in Section~\ref{chpt:figCode}.
 
 \newpage
 \subsection{Line Plots}
-Consider the presentation of data in Figure~\ref{fig:badLines!}. The figure is arranged in two columns: column (1), on the left, shows a poorly made plot, while column (2), on the right, shows a well-constructed one. The three rows \emph{(a)}, \emph{(b)}, and \emph{(c)} correspond to full RGB color, color as experienced with protanopia (red–green colorblindness), and grayscale, respectively. Table~\ref{tab:lineComparison} compares each flaw of plot (1) with its correction in column (2).
+Consider the presentation of data in Figure~\ref{fig:lineExample}. The figure is arranged in two columns: column (1), on the left, shows a poorly made plot, while column (2), on the right, shows a well-constructed one. The three rows \emph{(a)}, \emph{(b)}, and \emph{(c)} correspond to full RGB color, color as experienced with protanopia (red–green colorblindness), and grayscale, respectively. Table~\ref{tab:lineComparison} compares each flaw of plot (1) with its correction in column (2).
 
 
 \begin{table}[h!]
@@ -36,7 +36,7 @@ Consider the presentation of data in Figure~\ref{fig:badLines!}. The figure is a
         Programs default font (mismatched with document) & Font matching the document body (e.g., Latin Modern) & Makes plot text consistent with the surrounding \LaTeX{} type, so figures don't look pasted in. \textbf{Computer/Latin Modern or Helvetica/Free Sans are strongly recommended.} \\
         \hline
     \end{tabular}
-    \caption{Description of differences in plots shown in Figure~\ref{fig:badLines!} and their impact on readability.}
+    \caption{Description of differences in plots shown in Figure~\ref{fig:lineExample} and their impact on readability.}
     \label{tab:lineComparison}
 \end{table}
 
@@ -71,15 +71,16 @@ Consider the presentation of data in Figure~\ref{fig:badLines!}. The figure is a
   \includegraphics[trim = 0mm 0mm 0mm 0mm,clip,
   width=7.0cm, page=6]{Plots/images/linesv5.pdf}\\[2mm]
   \caption{Column 1 and Column 2 represent line plots of the same dataset with different plotting styles. The three rows \emph{(a)}, \emph{(b)}, and \emph{(c)} correspond to full RGB color, color as experienced with protanopia (red–green colorblindness), and grayscale, respectively.}
-  \label{fig:badLines!}
   \vspace*{2mm}
+    \label{fig:lineExample}
 \end{framed}
+
 \end{figure}
 
 
 
 
-% The second row showcases the same data presented in an effective and accessible way. The data is properly labeled, concisely describing the type of data and the different lines being presented. The addition of the star and circle marker makes the plot accessible when color is not available. Figure~\ref{fig:badLines!}\emph{(c)} showcases the same colors as \emph{(a)} for the respective curves but mimics protanopia (red-green colorblindness), highlighting the need to select colors that are distinct and contrasting. Increasing the linewidth of plotted curves, axes, and legend boxes effectively contrasts the information with the white background and stands out to the reader. Notice the font now matches standard \LaTeX, ensuring typeset continuity throughout the document.
+% The second row showcases the same data presented in an effective and accessible way. The data is properly labeled, concisely describing the type of data and the different lines being presented. The addition of the star and circle marker makes the plot accessible when color is not available. Figure~\ref{fig:lineExample}\emph{(c)} showcases the same colors as \emph{(a)} for the respective curves but mimics protanopia (red-green colorblindness), highlighting the need to select colors that are distinct and contrasting. Increasing the linewidth of plotted curves, axes, and legend boxes effectively contrasts the information with the white background and stands out to the reader. Notice the font now matches standard \LaTeX, ensuring typeset continuity throughout the document.
 
 
 
@@ -115,7 +116,7 @@ Consider the presentation of data in Figure~\ref{fig:badLines!}. The figure is a
 %   \includegraphics[trim = 0mm 0mm 0mm fields,clip,
 %   width=7.0cm, page=3]{Plots/images/lines.pdf}\\[-7mm]
 %   \caption{Three rows of some field, where each row represents a different colormap and each column represents different views of color. Row }
-%   \label{fig:badLines!}
+%   \label{fig:lineExample}
 %   \vspace*{2mm}
 % \end{framed}
 % \end{figure}
@@ -142,7 +143,7 @@ A colormap is a gradient of color, as seen in Figure~\ref{fig:turboCM}. Colormap
 
 Sequential colormaps change monotonically from one end to the other, like the \textit{blues} map at the top of Figure~\ref{fig:turboCM} which runs from a dark color to a bright one. These maps are effective for fields where it is important to see growth or subtle changes in magnitude across the field.
 
-Divergent colormaps change monotonically from each end toward the middle, where two dark colors meet at a bright center — as in the \textit{curl} map from cmocean \parencite{cmoceanRep} shown at the bottom of Figure~\ref{fig:turboCM}. They are effective for fields centered around some mean value since they highlight variation away from that center and make the largest deviations stand out.
+Divergent colormaps change monotonically from each end toward the middle, where two dark colors meet at a bright center — as in the \textit{curl} map shown at the bottom of Figure~\ref{fig:turboCM}. \textit{curl} is from cmocean by \textcite{cmoceanRep} . They are effective for fields centered around some mean value since they highlight variation away from that center and make the largest deviations stand out.
 
 
 
