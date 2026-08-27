@@ -277,7 +277,7 @@ sources who are credited under Creative Commons licenses.
 
 \vfill 
 
-\begin{textblock*}{\textwidth}
+\noindent\begin{minipage}{\textwidth}
 \noindent
 \textbf{Creative Commons Licensing}
 
@@ -291,7 +291,7 @@ sources who are credited under Creative Commons licenses.
 This work is licensed under Creative Commons Attribution-NonCommercial 4.0 International. 
 To view a copy of this license, visit \\
 \url{https://creativecommons.org/licenses/by-nc/4.0/}
-\end{textblock*}
+\end{minipage}
 
 % \vspace*{4mm}
 %   \textbf{Free Textbook Template Access} \\

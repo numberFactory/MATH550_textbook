@@ -1,0 +1,5 @@
+main.pdf filter=lfs diff=lfs merge=lfs -text
+Plots/images/comp* filter=lfs diff=lfs merge=lfs -text
+Plots/images/compCMAPSeqFlat.pdf filter=lfs diff=lfs merge=lfs -text
+Plots/images/compCMAP3D.pdf filter=lfs diff=lfs merge=lfs -text
+Plots/images/compCMAPDivFlat.pdf filter=lfs diff=lfs merge=lfs -text
