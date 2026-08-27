@@ -1,3 +1,11 @@
+% allows for alternative text
+% \DocumentMetadata{
+%     tagging=on,
+%     tagging-setup={math/setup=mathml-SE},
+%     pdfstandard=ua-2,
+%     lang=en-US
+% }
+
 \documentclass{tstextbook}
 
 %---------------------------------------------------------------------------
@@ -13,8 +21,44 @@
 \usepackage{enumitem}
 \usepackage{physics}
 \usepackage{amsmath}
+\usepackage{wrapfig}
+\usepackage{listings}
+\usepackage{xhfill}
+
 \renewcommand{\thefootnote}{\fnsymbol{footnote}}
 
+% ----- MATLAB listing environment ----- from Nils
+\usepackage[T1]{fontenc}
+\usepackage{inconsolata}
+% \usepackage[numbered,framed]{matlab-prettifier}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{white},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=none,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    frame=none
+}
+\lstset{style=mystyle}
+
+\setlength{\arrayrulewidth}{0.4mm}
+\setlength{\tabcolsep}{10pt}
+\renewcommand{\arraystretch}{2}
+
+
+\newcommand{\quo}[1]{``#1"}
 
 %---------------------------------------------------------------------------
 % Textbook contents
@@ -23,10 +67,14 @@
 
 \begin{document}
 
+
+
 \tsbook{Numerical Solutions to \\ Partial Differential Equations}   % Textbook name
        {| Brennan Sprinkle and Rachel Bertaud |} % Author(s)
        {Rachel Bertaud}                                    % Cover Artist
        {2026}                                               % Publication year
+
+
 
 %---------------------------------------------------------------------------
 % Chapters

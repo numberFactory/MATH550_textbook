@@ -231,43 +231,83 @@ contents={\includegraphics[width=\paperwidth]{images/NSPDE_FrontCover.png}}}
 \null
 \vfill
 
-\pagebreak
+% \pagebreak
 
 % Copyright page
 \null
 \vfill
 \begin{flushleft}
-  \textbf{Free Textbook Template Access} \\
-  \vspace{2mm}
-  An unmodified version of the free template used to create this textbook 
-  can be found at \href{https://www.typesetters.se/latex-textbook-template/}
-                       {https://www.typesetters.se/latex-textbook-template/}. \\
+%---------- disclaimer and copyright ---------%
+\newpage
+
+
+\vspace*{10mm}
+\noindent
+\textbf{Acknowledgement of Funding}\\
+Development of this textbook
+was supported by grants from the U.S.
+National Science Foundation (grant numbers 1752531 
+and 2306329) and a Zero Textbook Cost (ZTC) 
+initiative funded by the Colorado Department of 
+Higher Education Open Educational Resources 
+Grant Program, which supports the creation of 
+openly accessible learning materials to 
+reduce or eliminate textbook costs for students.
+
+
+\vspace*{10mm}
+\noindent
+\textbf{Use of AI-assisted editing tools}\\
+The author acknowledges the use of \emph{Claude}
+(Anthropic) and \emph{ChatGPT} (OpenAI) as
+editing tools in the preparation of this
+textbook. Both AI tools were used \emph{extensively}
+to identify grammatical issues, brainstorm clearer
+phrasing, verify consistent notation, resolve
+formatting issues in LaTeX, and compress image
+files. Any sample computer codes in this text
+were likely passed through an AI tool to check
+against best coding practices. To the author's
+best knowledge, the use of AI tools did not extend
+to original content generation.
+Furthermore, all figures and images in this text were either created
+by the author (using primarily
+Inkscape and Matlab) or third-party
+sources who are credited under Creative Commons licenses.
+
+\vfill 
+
+\begin{textblock*}{\textwidth}
+\noindent
+\textbf{Creative Commons Licensing}
+
+\vspace*{4mm}
+\noindent
+
+\includegraphics[trim={0 0 0 0},clip,width=2cm]{images/CCLicense.pdf}
+
+\vspace*{2mm}
+\noindent
+This work is licensed under Creative Commons Attribution-NonCommercial 4.0 International. 
+To view a copy of this license, visit \\
+\url{https://creativecommons.org/licenses/by-nc/4.0/}
+\end{textblock*}
+
+% \vspace*{4mm}
+%   \textbf{Free Textbook Template Access} \\
+%   \vspace{2mm}
+%   An unmodified version of the free template used to create this textbook 
+%   can be found at \href{https://www.typesetters.se/latex-textbook-template/}
+%                        {https://www.typesetters.se/latex-textbook-template/}. \\
   
-  \vspace{7mm}                    
-  \textbf{Creative Commons Licensing} \\
-  \vspace{2mm}
-  This work is licensed under a Creative Commons 
-  Attribution-NonCommercial-ShareAlike 4.0 International License. \\
-  
-  \vspace{7mm}
-  \begin{minipage}[t]{0.4\textwidth}
-    \textbf{Cover design by \@tscoverdesign.}
-  \end{minipage}\hfill
-  \begin{minipage}[t]{0.4\textwidth}
-  \begin{figure}[H]
-  \begin{flushright}
-    \vspace*{-13mm}
-    \includegraphics[width=3cm]{images/CCLicense.pdf}
-  \end{flushright}
-  \end{figure}
-  \end{minipage}
+
   
 \end{flushleft}
 
 % Table of contents
 {\hypersetup{hidelinks} \tableofcontents}
 
-\cleardoublepage
+% \cleardoublepage
 \pagestyle{fancy}
 \thispagestyle{empty}
 }
