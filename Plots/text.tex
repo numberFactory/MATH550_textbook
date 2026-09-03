@@ -1,5 +1,64 @@
 
-\chapter{How to Visually Communicate}
+\chapter{Introductions and Basics}
+\label{chpt:intro2Classs}
+
+\section{Partial Differential Equations Overview}
+
+There are three classic partial differential equations (PDEs):
+
+\vspace{0.5em}
+
+\hspace{2em} \textbf{I.}  Wave equation: \hspace{5.5em} $\nabla^2 \phi = \dfrac{1}{c^2} \dfrac{\partial^2 \phi}{\partial t^2} $  \hspace{2.2em} \emph{(hyperbolic)}
+
+\vspace{0.8em}
+
+\hspace{2em}  \textbf{II.}  Heat/diffusion equation: \hspace{1em} $\nabla^2 \phi = \dfrac{1}{k} \dfrac{\partial \phi}{\partial t}$  \hspace{3em} \emph{(parabolic)}
+
+\vspace{0.8em}
+
+\hspace{2em}  \textbf{III.}  Laplace's equation: \hspace{3.2em} $\nabla^2 \phi = 0$  \hspace{4.8em} \emph{(elliptic)}
+
+
+\noindent Here $\phi$ denotes some property (i.e., velocity, pressure), $t$ time, and $c,k \in \mathbb{R}$ are constants. $\nabla$ is the nabla operator and its definition depends on the context. Generally, $\nabla$  is an $n$-dimensional vector operator whose components contain a partial derivative operation with respect to the dimension of their index. For example,
+\begin{align*}
+\text{n = 1}: \hspace{1em} \nabla &= \left[ 
+\frac{\partial }{\partial x} \right]\\
+\text{n = 2}: \hspace{1em} \nabla &= \left[ 
+\frac{\partial }{\partial x} \ ,  \ \frac{\partial }{\partial y} \right] \\
+\text{n = 3}: \hspace{1em}  \nabla &= \left[ 
+\frac{\partial }{\partial x} \ , \ \frac{\partial }{\partial y}, \ \frac{\partial }{\partial z} \right]
+\end{align*}
+
+\noindent Let's consider a two-dimensional ($n = 2$) domain $\Omega$ and the property velocity $\mathbf{u} = \left[u(x,y), v(x,y) \right]$, where $(x,y) \in \Omega$. Then,
+$$
+\nabla \cdot \mathbf{u}= \left[ 
+\frac{\partial }{\partial x} \ , \ \frac{\partial }{\partial y} \right] \cdot  \left[  u(x,y), v(x,y) \right]= 
+\frac{\partial u(x,y) }{\partial x} + \frac{\partial v(x,y)}{\partial y}.
+$$
+This is simply the divergence of $\Omega$. The $\nabla$ operator also appears for calculations of gradients ($\nabla \mathbf{u}$) and curl ($\nabla \times \mathbf{u}$).
+
+Each of the three classic PDEs have their own set of applications. The wave equation $\mathbf{I}$ can help model the motion of specific waves, such as sound and electromagnetic, and how they interact with solids. Heat transfer and basic diffusion of chemicals, such as air pollutants, can be modeled with the diffusion equation $\mathbf{II}$. Laplace's equation $\mathbf{III}$ can be applied to gravitational attraction and electrostatics. All of these equations have many more applications than those listed here, but these give applications provide intuition on how they can be used to better understand dynamical systems.
+
+Note that all three of these equations are linear, second-order, homogeneous PDEs. Recall that a PDE is linear if no unknowns are multiplied together, second-order because the highest derivative of $\mathbf{u}$ is two, and homogeneous because it is only an equation of unknowns. In all three, $\mathbf{u} = \mathbf{0}$ is always a solution and the principle of superposition can be applied. These properties allow us to construct many solutions of the PDE by separation of variables. All three equations also contain $\nabla^2$, which follows from physical assumptions. Many modeled phenomena are independent of coordinate system, meaning that the choice or origin and orientation of axes does not change the outcome.  $\nabla^2$ is also independent of the coordinate system, making it a standard choice when modeling these phenomena.
+
+Inhomogeneous versions of classic PDEs are of interest as they allow us to understand how a system behaves when forced. One notable example is Poisson's equation
+$$
+\nabla^2 \phi = \mathbf{f},
+$$
+where $f$ is a given function and $\phi$ is unknown. Often we cannot solve these by hand, leading to the development of numerical methods. Numerical methods fall into two main categories: colocation and Galerkin. Colocation methods solve for $\phi$ at discrete points across the domain. Galerkin methods rely on known basis functions and solve for $\phi$ in terms of these bases. In this class, we will consider
+
+{
+\centering
+\begin{enumerate}
+\item Finite difference methods (Colocation)
+\item Finite element methods (Galerkin)
+\item pseudo-spectral methods (either)
+\item boundary integral methods (either)
+
+\end{enumerate}
+}
+
+\section{How to Visually Communicate}
 \label{chpt:visComm}
 
 
@@ -8,19 +67,17 @@
 \index{plotting}
 \index{figure making}
 
-\section{Effective and Accessible Communication}
+\subsection{Effective and Accessible Communication}
 \label{chpt:effectiveFigs}
-Visual communication is effective when the reader immediately understands what is being presented. Labels, such as those in legends and on axes, tell the reader exactly what is presented without the need for assumptions or guessing. Units for the axes set scale which allows the reader to form conclusions of their own without further explanation. Captions describe the visualization in words and include what the reader needs to understand the plot's labels, such as variable definitions. Note that conclusions or analysis \textit{should not} be discussed in captions. Plots can imply if the data is discrete or continuous by using data symbols (scatter plots) or continuous curves (solid lines). Data are generally discrete and should be plotted using symbols, while theory/fits should be plotted as continuous curves. All of these stylistic choices discussed make visual communication more effective.
+Visual communication is effective when the reader immediately understands what is being presented. Labels, such as those in legends and on axes, informs the reader without the need for questions, assumptions or guessing. Units for the axes set the scale of the problem, which allows the reader to understand physical or numerical implications without explanation. Captions describe the visualization in words and include what the reader needs to understand the plot's labels, such as variable definitions. Note that conclusions or analysis \textit{should not} be discussed in captions. Plots can imply if the data are discrete or continuous through style; data are generally discrete and should be plotted using symbols, while theory/fits should be plotted as continuous curves. All of these choices discussed make visual communication more effective.
 
-For visual communication to be completely accessible, no reader should be at a disadvantage due to physical abilities or technological access. Colorblindness can make data difficult to discern if the colors do not contrast, especially when considering those who are completely colorblind or when work is printed in black and white. Efforts to use more than color, such as markers, and to select contrasting colors ensure general readability no matter the case. Assistive technology is capable of converting visual communication to non-visual communication by reading alternative text of images. When publicizing work, it is important to include and use descriptive alternative text so that any visual communication can be understood without seeing the image or figure. 
+For visual communication to be completely accessible, no reader should be at a disadvantage due to physical abilities or technological access. Colorblindness can make data difficult to discern if the colors do not contrast, especially when considering those who are completely colorblind or when work is printed in black and white. Efforts to use more than color, such as markers, and to select contrasting colors ensure general readability no matter the case. Assistive technology is capable of converting visual communication to non-visual communication by reading alternative text of images. Although out of the scope of this class, it is important to include and use descriptive alternative text so that any visual communication can be understood without seeing the image or figure. 
 
-The next two subsections will discuss class standards for visual communication for line and field plots. Code used to produce plots seen in Figures~\ref{fig:lineExample} and \ref{fig:exampleFields} is provided in Section~\ref{chpt:figCode}.
+The next two subsections will discuss class standards on visual communication for line and field plots. Code used to produce Figures~\ref{fig:lineExample} and \ref{fig:exampleFields} is provided in Section~\ref{chpt:figCode}.
 
 \newpage
-\subsection{Line Plots}
-Consider the presentation of data in Figure~\ref{fig:lineExample}. The figure is arranged in two columns: column (1), on the left, shows a poorly made plot, while column (2), on the right, shows a well-constructed one. The three rows \emph{(a)}, \emph{(b)}, and \emph{(c)} correspond to full RGB color, color as experienced with protanopia (red–green colorblindness), and grayscale, respectively. Table~\ref{tab:lineComparison} compares each flaw of plot (1) with its correction in column (2).
-
-
+\subsubsection{Line Plots}
+Consider the presentation of data in Figure~\ref{fig:lineExample}. The figure is arranged in two columns: column (1), on the left, shows a poorly made plot, while column (2), on the right, shows a well-constructed plot. The three rows \emph{(a)}, \emph{(b)}, and \emph{(c)} correspond to three different color spectrums: full RGB, that related to protanopia (red-green colorblind), and grayscale. Table~\ref{tab:lineComparison} compares each flaw of plot (1) with its correction in column (2), with a description of how the correction increases effectiveness in column (3).
 \begin{table}[h!]
     \centering
     \begin{tabular}{|>{\raggedright\arraybackslash}p{3cm}|>{\raggedright\arraybackslash}p{4cm}||>{\raggedright\arraybackslash}p{6cm}|}
@@ -39,6 +96,9 @@ Consider the presentation of data in Figure~\ref{fig:lineExample}. The figure is
     \caption{Description of differences in plots shown in Figure~\ref{fig:lineExample} and their impact on readability.}
     \label{tab:lineComparison}
 \end{table}
+
+\clearpage
+\newpage
 
 
 \begin{figure}[!ht]
@@ -80,7 +140,7 @@ Consider the presentation of data in Figure~\ref{fig:lineExample}. The figure is
 
 \clearpage 
 \newpage
-\subsection{Field Plots}
+\subsubsection{Field Plots}
 
 
 Plotting fields is an effective way to understand what a system is doing at an instance of time.  Efforts to make fields more effective and accessible are focused on ensuring the labels are clear and a good colormap is selected. 
@@ -91,16 +151,21 @@ Plotting fields is an effective way to understand what a system is doing at an i
     % \hspace{6cm}
     % \vspace{1cm}
     \includegraphics[width=0.75\linewidth]{Plots/images/curl.jpg}
-    \caption{A sequential colormap (\textit{blues}) on top and a diverging colormap (\textit{curl}) on bottom. Colormaps from \textcite{cmapRepo}.}
-    \label{fig:turboCM}
+    \caption{A sequential colormap (\textit{blues}) on top and a diverging colormap (\textit{curl}) on bottom. Images from \textcite{cmapRepo}.}
+    \label{fig:exampleCMs}
 \end{figure}
 
-A colormap is a gradient of color, as seen in Figure~\ref{fig:turboCM}. Colormaps map numerical values of a field to colors along its gradient, which lets us visualize how the field changes across space and time. Different styles of colormap suit different applications; here we consider \textit{sequential} and \textit{divergent} maps.
+A colormap is a gradient of color, as seen in Figure~\ref{fig:exampleCMs}. Colormaps map numerical values of a field to colors along a gradient, which allows for spatial visualization of variations of the field. Different styles of colormap suit different applications; here we consider \textit{sequential} and \textit{divergent} maps.
 
 
+Sequential colormaps change monotonically from one end to the other, like the \textit{blues} map at the top of Figure~\ref{fig:exampleCMs}, which runs from dark blue to bright white. Sequential maps are effective for fields where growth or subtle changes in magnitude across the field are important to discern.
+
+Divergent colormaps change monotonically from each end toward the middle, where two dark colors meet at a bright center, as in the \textit{curl} \parencite{cmoceanRep} map shown at the bottom of Figure~\ref{fig:exampleCMs}. Divergent maps are effective for highlighting variation from means in fields that diverge or cycle around a value (i.e., sinusoidal).
 
 
-\begin{figure}[!ht]
+Consider the two-dimensional fields shown in Figure~\ref{fig:exampleFields}. The field in column 1 is considered sequential, as the data grows monotonically to peaks at different points in the field. The field is column two contains discontinuous oscillations about $f(x,y) = 0$. A divergent color map clearly shows where these oscillations are and the general pattern they have across the field, while highlighting the mean. This pattern is much more apparent in the two-dimensional (2D) plot (2b), whereas the three-dimensional (3D) plot (2b) does not accurately reflect the field. In this case, the field at the center is hidden by the large magnitude oscillations along the $x$ axis. In 1(b), it is not clear what is happening behind the peaks of the field. These examples highlight the importance of angle at which the data is plot, as the surface can hid information when certain angles are chosen. Generally, it is best to plot in 2D to ensure a full view of the data field, as seen in the (a) row of Figure~\ref{fig:exampleFields}.
+
+ \begin{figure}[htbp]
 \begin{framed}
   % ---- Row 1 ----
   \emph{1}(\emph{a})
@@ -116,9 +181,9 @@ A colormap is a gradient of color, as seen in Figure~\ref{fig:turboCM}. Colormap
   \hspace*{7cm}
   \emph{2}(\emph{b})\\
   \hspace*{5mm}
-  \includegraphics[trim = 4mm 4mm 4mm 4mm,clip,
+  \includegraphics[trim = 0mm 0mm 0mm 0mm,clip,
   width=7.0cm, page=2]{Plots/images/compCMAP3D.pdf}
-  \includegraphics[trim = 4mm 4mm 4mm 4mm,clip,
+  \includegraphics[trim = 0mm 0mm 0mm 0mm,clip,
   width=7.0cm, page=1]{Plots/images/compCMAP3D.pdf}\\[2mm]
   \caption{Column 1 and Column 2 represent field plots of the same dataset with different plotting styles. The two rows \emph{(a)} and \emph{(b)} correspond to flat pseudocolor plots and 3D plots, respectively.}
   \label{fig:exampleFields}
@@ -127,15 +192,44 @@ A colormap is a gradient of color, as seen in Figure~\ref{fig:turboCM}. Colormap
 \end{figure}
 
 
-Sequential colormaps change monotonically from one end to the other, like the \textit{blues} map at the top of Figure~\ref{fig:turboCM} which runs from a dark color to a bright one. These maps are effective for fields where it is important to see growth or subtle changes in magnitude across the field.
+\clearpage
 
-Divergent colormaps change monotonically from each end toward the middle, where two dark colors meet at a bright center — as in the \textit{curl} map shown at the bottom of Figure~\ref{fig:turboCM}. \textit{curl} is from cmocean by \textcite{cmoceanRep} . They are effective for fields centered around some mean value since they highlight variation away from that center and make the largest deviations stand out.
+\newpage
+
+What makes a colormap good? Color can mean more than just showcasing subtle changes or disparities around a mean. It can help showcase landscapes, simulations of ocean surfaces, statistical disparities, and much more. Many colormaps are born from a need to have both effective and accessible visual communication in situations that call for certain color schemes or styles. Open-source colormap repositories include:
+
+\begin{itemize}
+\item  cmocean \parencite{cmoceanRep, cmoceanarticle}: for presenting oceanography data, \\
+\item \textit{CMasher} \parencite{cmasher}: aimed for making accessible, informative, and \textit{cmashing} plots \\
+\item  seaborn \parencite{seaborn}: for statistical data visualization \\
+\item cmap \parencite{cmapRepo}: perceptually uniform colormaps for MATLAB, compiled from multiple sources. \\
+\item scientific \parencite{scientific}: accurate data visualization needs and accurate scales readable by everyone. 
+\end{itemize}
+
+Some colormaps can fall into more than one category as well, making them effective tools in general cases. \textit{turbo}\parencite{turboCM} is one of the most popular colormaps because it can be applied to many different styles of data effectively and was designed with accessibility in mind. 
+
+\begin{figure}[!ht]
+\centering
+    \includegraphics[width=0.75\linewidth]{Plots/images/jet.jpg}\\ [2mm]
+    \includegraphics[width=0.75\linewidth]{Plots/images/turbo.jpg}\\ 
+    \caption{jet (top) and turbo (bottom), both sequential and diverging colormaps. turbo image from \textcite{cmapRepo}.}
+    \label{fig:turboCM}
+ \end{figure}
+ 
+\textit{turbo}, shown at the bottom of Figure~\ref{fig:turboCM}, is a form of rainbow colormap. \textit{tubo} was created to address major faults in \textit{jet}, the top color map of Figure~\ref{fig:turboCM}. \textit{jet} is high in contrast and has distinct color bands which manifest on data, making certain areas seem less smooth than they are. This phenomena is known as "false detail" and should be considered when picking a colormap. The left tail on \textit{jet} is a broad, almost-uniform blue gradient that manifests as one color in grayscale and for the colorblind, making it inaccessible. \textit{turbo} addresses these problems with a perceptually uniform rainbow with well-defined tails, effectively removing the false detail, color bands, and inaccessibility concerns of \textit{jet}. 
+
+These rainbow maps are unique as they serve as both sequential and divergent colormaps. They are particularly popular showing details across a range of magnitudes, as the combination of style highlights extremes at both end points and in the middle. Application of rainbow plots to study depth in images allows information at the far-field and near-field to be highlighted without overlooking what lies between. 
+
+We analyze \textit{jet} and \textit{turbo} in Figure~\ref{fig:dispair}, which showcases an image of a road in three sets of three. In each set, three colormaps are applied to the image: \textit{cool}, \textit{jet}, and \textit{turbo}. Each set is then displayed in three different color spectrums: full RGB, that related to protanopia (red-green colorblind), and grayscale. Consider a case where it is important to have information up-close and far away, but also to clearly see when something stands out. One example might be a self-driving car analyzing its path ahead, where it needs to know where it is, whats coming ahead, and if there is something along the path, like a person crossing the road or another car.
+
+Looking at the full RGB set (set 1), it is clear that \textit{cool} (top image) captures only the closest cars, with everything at a distance either vague or washed out. The ability of \textit{jet} (middle) to capture detail is clear, with street posts and cars even at long-distance standing out. However strong color bands are seen on the closer cars and everything at a certain distance has similar colors of blue.  In comparison, \textit{turbo} (bottom) has smooth gradients on the closest cars, the further perceived depth, and builds on the sharp detail of \textit{jet} for all distances.
+
+Sets 2 and 3 showcase the same images as set 1 but for the color scale of protanopia (red-green colorblindness) and a grayscale, respectively. In set 2, \textit{cool} does not change much, which follows as there is minimal red and green, but shows its flaws in the grayscale of set 3 where the image is completely gray with no detail.  \textit{jet} has more detail stand out at a distance for set 2, with the blues becoming more defined than in RBG, but the color bars on the closet cars expand. At grayscale, \textit{jet} is able to maintain a lot of detail but fails to maintain a uniform gradient, making it hard to tell depth without perspective of the objects on the street. \textit{turbo} is able to maintain detail at a distance in both set 2 and 3, but loses some of its uniform gradient at grayscale with closer details blending together. 
+
+This discussion of colormaps highlights that certain colormaps are effective for specific data analysis and considerations for unconventional RBG scales makes visual communication of that data more accessible to all. In this class, data will generally be either sequential or divergent. Choosing colors that relate to the problem (i.e., \textit{Blues} for water) should be considered, while keeping in mind that not all colors are accessible. 
 
 
-Consider the two-dimensional fields shown in Figure~\ref{fig:exampleFields}. The field in column 1 is considered sequential, as the data grows monotonically to peaks across the field. The field is column two is divergent, with discontinuous oscillations about $f(x,y) = 0$. A divergent color map clearly shows where these oscillations are, and the general pattern they have across the field. This pattern is much more apparent in the two-dimensional (2D) plot (2b), where as the three-dimensional (3D) plot (2b) does not accurately reflect the field, as much of the field at the center is hidden by the large magnitude oscillations along the $x$ axis. When plotting in 3D, it is important to consider the angle at which the data is plot, as the surface can hid information when certain angles are chosen. Generally, it is best to plot in 3D.
-
-Some popular colormaps are considered both sequential and diverging, such as \textit{turbo}. 
-
+ 
 
 
 \begin{figure}[!ht]
@@ -144,19 +238,21 @@ Some popular colormaps are considered both sequential and diverging, such as \te
 \setlength{\tabcolsep}{2pt}
 \begin{tabular}{c c}
   % ---- Row 1 ----
-  \rotatebox{90}{\makebox[6cm][c]{\emph{Row 1: full RGB}}}
+  \rotatebox{90}{\makebox[6cm][c]{\emph{Set 1: full RGB}}}
   & \includegraphics[width=0.80\linewidth]{Plots/images/dispRBG.pdf} \\
   % ---- Row 2 ----
-  \rotatebox{90}{\makebox[6cm][c]{\emph{Row 2: colorblind}}}
+  \rotatebox{90}{\makebox[6cm][c]{\emph{Set 2: protanopia}}}
   & \includegraphics[width=0.80\linewidth]{Plots/images/dispProton.pdf} \\
   % ---- Row 3 ----
-  \rotatebox{90}{\makebox[6cm][c]{\emph{Row 3: grayscale}}}
+  \rotatebox{90}{\makebox[6cm][c]{\emph{Set 3: grayscale}}}
   & \includegraphics[width=0.80\linewidth]{Plots/images/dispMono.pdf} \\
 \end{tabular}
-\caption{wip}
-\label{fig:fieldsPlots}
+\caption{An image of a road in three sets of three. The main set is three colormaps applied to the image: \textit{cool}, \textit{jet}, and \textit{turbo}. This set is then showcased for three different color spectrums: full RGB (Set 1), that related to protanopia/red-green colorblind (Set 2), and grayscale (Set 3).}
+\label{fig:dispair}
 \end{framed}
 \end{figure}
+ 
+ 
 
 % { \Large \textcolor{magenta}{fix caption and once thats decided make as big as possible ALSO READ THRU CODE TO QC} }
 
@@ -164,7 +260,7 @@ Some popular colormaps are considered both sequential and diverging, such as \te
 
 % Now, let's consider . Each row of showcases the same data as that in  Figure~\ref{fig:exampField}, but with different colormaps. When choosing colormaps, it is important to consider both what is being presented and if the map is accessible. You may be drawn to the \textit{ice} colormap shown in row 1, as blue is a natural color choice for fluid or you enjoy it. However, \textit{ice} in grayscale washes out the gradient between the rings of "waves", making the field look more binary than connected. Row 2 shows \textit{jet}, once a quite popular colormap. You'll   
 
-\section{Implementations}
+\subsection{Implementations}
 \label{chpt:figCode}
 
 {

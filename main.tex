@@ -21,8 +21,8 @@
 \usepackage{enumitem}
 \usepackage{physics}
 \usepackage{amsmath}
-\usepackage{wrapfig}
 \usepackage{listings}
+\usepackage{graphicx}
 
 
 \renewcommand{\thefootnote}{\fnsymbol{footnote}}
@@ -55,7 +55,9 @@
 
 \setlength{\arrayrulewidth}{0.4mm}
 \setlength{\tabcolsep}{10pt}
-\renewcommand{\arraystretch}{2}
+\renewcommand{\arraystretch}{1.5}
+
+\setcounter{MaxMatrixCols}{20}
 
 
 \newcommand{\quo}[1]{``#1"}
@@ -80,7 +82,9 @@
 % Chapters
 %---------------------------------------------------------------------------
 
-\include{Plots/text}  
+\include{Plots/text} 
+\include{FDM/text}
+
 
 
 % Use \include{} to include any additional chapters here.

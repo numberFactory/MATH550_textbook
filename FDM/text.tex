@@ -1,0 +1,131 @@
+\chapter{Finite Difference Methods}
+\label{chpt:FDM}
+
+Finite difference methods (FDM) are collocation methods based on Taylor
+series approximation and are used to approximate derivatives and derivative operators. They are an old and simple numerical method which become popular after the development as computers due to the sheer amount of arithmetic for application. In this chapter, we will define numerical schemes to approximate first and second derivatives. These schemes can then be extended to help solve PDEs by approximating derivatives and derivative operators ($\nabla, \nabla^2$).
+\index{finite difference methods}
+\section{The Basics}
+
+\begin{wrapfigure}{r}{0.4\textwidth}
+\centering
+\includegraphics[width=0.38\textwidth]{FDM/images/1dFDM.pdf}
+\caption{A smooth function $\phi$ sampled on the equally spaced grid
+$\{x_i\}$ partitioning $[a,b]$. $\phi$ is discretely sampled on the grid, where
+$\phi_i \equiv \phi(x_i)$ .}
+\label{fig:grid}
+\end{wrapfigure}
+
+
+Consider a domain $[a,b]\subset\mathbb{R}$ and a grid of
+equally spaced points $\{x_i\}_{i=0}^{N}\subset[a,b]$ such that $x_0=a$ and
+$x_N=b$. The spacing between neighboring points can be computed as
+$
+\Delta x = \frac{b-a}{N}
+$
+so that $x_i = a + i\,\Delta x$. Given some function $\phi: [a,b] \to\mathbb{R}$, we denote
+$\phi_i \equiv \phi(x_i)$. 
+ 
+
+ 
+Recall that a sufficiently smooth function can be written as a Taylor series about a single point. Assuming $\phi$ is smooth, its Taylor series about some point $x_i$ is
+\begin{equation}
+\phi(x) = \phi_i + \phi'_i\,\Delta x
++ \frac{\phi''_i}{2}\,\Delta x^2 + \cdots
+\label{eq:taylorForward}
+\end{equation}
+\index{Taylor series}
+for $x \in [a,b]$. The finite difference approach evaluates $\phi$ at respective $x \in \{x_i\}_{i =0}^{N}$ in terms of a Taylor series about one of its neighbors (i.e., $\phi_{i}$), where the series can be truncated for sufficiently small $\Delta x$. The remaining series terms are rearranged to produce approximations for various derivatives with well-defined error from the truncated terms. 
+
+\section{First Derivative Approximations}
+\index{finite difference methods!first derivatives}
+\label{sec:firstderiv}
+We will discuss the forward,
+backward, and central difference scheme for approximating $\phi'_i$. The former two are first-order schemes and the latter is second-order.
+\index{finite difference methods!first derivatives!forward difference}
+\subsection{Forward difference}
+Following from \eqref{eq:taylorForward}, $\phi_{i + 1}$ can be approximated as 
+$$
+\phi_{i + 1} = \phi_i + \phi'_i \Delta x + \frac{\phi''_i}{2} (\Delta x^2) + \hdots 
+$$
+Solving this aprroximation for $\phi'_i$ yields
+\[
+\phi'_i = \frac{\phi_{i+1}-\phi_i}{\Delta x} - R,
+\qquad
+R = \frac{\phi''_i}{2}\,\Delta x + \hdots,
+\]
+where $R$ is the local truncation error. The magnitude of error $R$ is controlled by the leading
+retained term $\tfrac{1}{2}\phi''_i\,\Delta x$, which is proportional to
+$\Delta x$. This error is generally recorded using Big~$\mathcal{O}$ notation,
+\begin{equation}
+\phi'_i = \frac{\phi_{i+1}-\phi_i}{\Delta x} + \mathcal{O}(\Delta x).
+\label{eq:fdFO1}
+\end{equation}
+Equation~\eqref{eq:fdFO1} is the \emph{first-order forward
+difference} approximation of $\phi'_i$. The word forward refers to the fact that
+the Taylor series around $x_i$ estimates $\phi$ at the next or forward point $x_{i+1}$. Note how derivative approximation resembles the limit
+definition of the derivative!
+
+\index{finite difference methods!first derivatives!backward difference}
+
+\subsection{Backward difference}
+Estimating the previous point $\phi_{i - 1}$ in terms of \eqref{eq:taylorForward} yields
+\begin{equation}
+\phi_{i - 1} = \phi_i - \phi'_i\,\Delta x
++ \frac{\phi''_i}{2}\,\Delta x^2
+- \frac{\phi'''_i}{6}\,\Delta x^3 + \cdots,
+\label{eq:taylorBackward}
+\end{equation}
+The odd terms of the series are now negative, as $(x_i - \Delta x) - x_i = -\Delta x$. Solving \ref{eq:taylorBackward} for $\phi'(x_i)$ gives the \emph{first-order backward difference},
+\begin{equation}
+\phi'(x_i) = \frac{\phi_i-\phi_{i-1}}{\Delta x} + \mathcal{O}(\Delta x).
+\label{eq:fdBO1}
+\end{equation}
+
+The word backwards refers to the fact that
+the Taylor series around $x_i$ estimates $\phi$ at the last or backward point $x_{i+1}$.
+
+\index{finite difference methods!first derivatives!central difference}
+\subsection{Central difference}
+\label{sec:central}
+Reorganizing the forward and backwards Taylor series approximations yields
+\begin{align}
+\phi'_i &=  \frac{\phi_{i+1}-\phi_i}{\Delta x} - \frac{\phi''_i}{2}\,\Delta x - \frac{\phi'''_i}{3}\,\Delta x^2 + \cdots \label{eq:add1}
+\\
+ \phi'_i &= \frac{\phi_i-\phi_{i-1}}{\Delta x}  + \frac{\phi''_i}{2}\,\Delta x - \frac{\phi'''_i}{3}\,\Delta x^2 + \cdots \label{eq:add2}
+\end{align}
+Adding  \eqref{eq:add1} and \eqref{eq:add2} and dividing by a factor of two obtains a second-order accurate scheme:
+\begin{equation}
+\phi'(x_i) = \frac{\phi_{i+1}-\phi_{i-1}}{2\,\Delta x} - \frac{\phi'''(x_i)}{6}\,\Delta x^2 + \cdots = \frac{\phi_{i+1}-\phi_{i-1}}{2\,\Delta x} + \mathcal{O}(\Delta x^2).
+\label{eq:fdCentral}
+\end{equation}
+
+\section{Second Derivative Approximations}
+\label{sec:secondderiv}
+\index{finite difference methods!second derivatives!central difference}
+To approximate $\phi''_i$ we again estimate in the forward and backward directions:
+\begin{align}
+\phi_{i+1} &= \phi_i + \phi'_i\,\Delta x
++ \frac{\phi''_i}{2}\,\Delta x^2
++ \frac{\phi'''_i}{6}\,\Delta x^3
++ \frac{\phi''''_i}{24}\,\Delta x^4 + \cdots, \label{eq:add11}\\
+\phi_{i-1} &= \phi_i - \phi'_i\,\Delta x
++ \frac{\phi''_i}{2}\,\Delta x^2
+- \frac{\phi'''_i}{6}\,\Delta x^3
++ \frac{\phi''''_i}{24}\,\Delta x^4 - \cdots. \label{eq:add22}
+\end{align}
+Adding \eqref{eq:add11} and \eqref{eq:add22}, the odd-order terms cancel and
+\[
+\phi_{i+1}+\phi_{i-1} = 2\,\phi_i + \phi''_i\,\Delta x^2
++ \frac{\phi'''_i}{12}\,\Delta x^4 + \cdots.
+\]
+\vspace*{-2mm}
+Solving for $\phi''_i$ gives the second-order central
+difference scheme for the second derivative:
+\begin{equation}
+\phi''_i = \frac{\phi_{i+1} - 2\phi_i + \phi_{i-1}}{\Delta x^2}
++ \mathcal{O}(\Delta x^2).
+\label{eq:fdSecond}
+\end{equation}
+
+
+
