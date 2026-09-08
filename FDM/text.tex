@@ -8,7 +8,7 @@ series approximation and are used to approximate derivatives and derivative oper
 
 \begin{wrapfigure}{r}{0.4\textwidth}
 \centering
-\includegraphics[width=0.38\textwidth]{FDM/images/1dFDM.pdf}
+\includegraphics[width=0.38\textwidth, page=1]{FDM/images/1DFDMv5.pdf}
 \caption{A smooth function $\phi$ sampled on the equally spaced grid
 $\{x_i\}$ partitioning $[a,b]$. $\phi$ is discretely sampled on the grid, where
 $\phi_i \equiv \phi(x_i)$ .}
@@ -293,17 +293,17 @@ places the discrete points of $x$ at the cell \emph{centers}. This results in on
 \emph{faces} fall on the boundaries, so no discrete point $x$ lies on the domain
 edge. The cell centers are
 \begin{equation}
-    x_i = a + \left(i + \tfrac{1}{2}\right)\Delta x,
-    \quad i = 0,1,\dots,N -1 ,
+    x_{i + 1/2} = a + \left(i + \tfrac{1}{2}\right)\Delta x,
+    \quad i = 0,1,\dots,N - 1
 \end{equation}
-and the faces sit at $x_{i+1/2} = a + i\,\Delta x$. This cell idea is depicted for the discrete point $x_i$ in Figure~\ref{fig:typeII}. The two boundaries are now faces of the cells $x_{0, -1}$ and $x_{(N-1), N}$, and the nearest grid point is half a spacing inside. The ghost points lie half a spacing outside each end of the domain,
-as seen by the gray and black points in Figure~\ref{fig:typeII}. At the left boundary, we can lay our finite difference stencil, seen as the gray shaded region, where $P = x_0$, $W = x_{-1}$, and $E = x_1$, and the boundary itself is the west face of $x_{0}$ and east face of $x_{-1}$.
+and the faces still sit at $x_{i} = a + i\,\Delta x$. This cell idea is depicted for the discrete point $x_i$ in Figure~\ref{fig:typeII}. The two boundaries still sit at $x_0$ and $x_N$, but the nearest grid point is half a spacing away. The ghost points lie half a spacing outside each end of the domain,
+as seen by the gray and black crosses in Figure~\ref{fig:typeII}. At the left boundary, we can lay our finite difference stencil, seen as the gray shaded region, where $P = x_{1/2}$, $W = x_{-1/2}$, and $E = x_{3/2}$, and the boundary itself is the west face of $x_{1/2}$ and east face of $x_{-1/2}$.
 \index{cell-centered grid}\index{grid!Type II}
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.9\textwidth, page=10]{FDM/images/1DFDMv5.pdf}
-    \caption{A Type~II (cell-centered) grid on $[a,b]$. Interior points $x_1, \hdots, x_{N - 2}$ seen in lighter cyan and exterior points $x_0, x_{N-1}$ seen as darker orange. Ghost nodes are first and last points defined in gray and black. Finite different stencil for $P = x_0$ highlight as grey stroke, with contributors $P, E,$ and $W$ labelled. The cell definition is labelled for $x_i$, with the diameter $\Delta x$ and region referred to as the cell face labelled.}
+    \caption{A Type~II (cell-centered) grid on $[a,b]$ shown as stars. Interior points $x_{3/2}, \hdots, x_{N - 3/2}$ seen in lighter cyan and exterior points $x_{1/2}, x_{N-1/2}$ seen as darker orange. Ghost nodes are first and last points defined in gray and black. Finite different stencil for $P = x_{1/2}$ highlight as grey stroke, with contributors $P, E,$ and $W$ labelled. The cell definition is labelled for $x_{i + 1/2}$, with the diameter $\Delta x$ and region referred to as the cell face labelled.}
     \label{fig:typeII}
 \end{figure}
 
@@ -355,7 +355,7 @@ For the first row of the system~\ref{baseFDM}, this would look like
 \emph{Type~II.} The cells wrap directly: the left ghost cell is a copy of
 the last interior cell and the right ghost cell is a copy of the first,
 \begin{equation}
-    \phi_W = \phi_{-1} \equiv \phi_{N-1}
+    \phi_W = \phi_{-1/2} \equiv \phi_{N-1/2}
 \end{equation}
 This would be imposed just the same as \eqref{periodQueen}.
 \subsection{Dirichlet}
@@ -403,16 +403,16 @@ known value across the linear system, the (now first) row for $\phi_1$ becomes
         -\sin(x_1) - \frac{\alpha}{\Delta x^2}
     \end{bmatrix}. \label{rhsDirTop}
 \end{equation}
-\noindent The latter of these two approaches is ideal and should be chosen for homework in this class.\\
+Both methods are equivalent.
 
 \emph{Type~II.} 
-On a Type~II grid there is no discrete point at the boundary, so we can only implement the condition on the right-hand side of our linear system. We approximate the boundary as the midpoint between $x_{-1}$ and $x_{0}$:
+On a Type~II grid there is no discrete point at the boundary, so we can only implement the condition on the right-hand side of our linear system. We approximate the boundary as the midpoint between $x_{-1/2}$ and $x_{1/2}$:
 $$
-\alpha = \frac{\phi_{-1} + \phi_0}{2} \implies \phi_{-1} = 2\alpha - \phi_0
+\alpha = \frac{\phi_{-1/2} + \phi_{1/2}}{2} \implies \phi_{-1/2} = 2\alpha - \phi_{1/2}
 $$
 Plugging this into \eqref{eq:bvp-central} yields
 \begin{equation}
-    \frac{-3\phi_0 + \phi_1}{\Delta x^2} = -\sin(x_0) - \frac{2\alpha}{\Delta x^2}.
+    \frac{-3\phi_{1/2} + \phi_{3/2}}{\Delta x^2} = -\sin(x_{1/2}) - \frac{2\alpha}{\Delta x^2}.
 \end{equation}
 
 \noindent The first row of our system~\eqref{baseFDM} then becomes
@@ -423,11 +423,11 @@ Plugging this into \eqref{eq:bvp-central} yields
         -3& 1 & 0 & \cdots & 0\\
     \end{bmatrix}
     \begin{bmatrix}
-        \phi_0 & \phi_1 & \phi_2 &  \cdots  & \phi_{N-1}
+        \phi_{1/2} & \phi_{3/2} & \phi_{5/2} &  \cdots  & \phi_{N-1/2}
     \end{bmatrix}^T
     =
     \begin{bmatrix}
-        -\sin(x_0) - \frac{2\alpha}{\Delta x^2}
+        -\sin(x_{1/2}) - \frac{2\alpha}{\Delta x^2}
     \end{bmatrix}. \label{dirTypeII}
 \end{equation}
 
@@ -471,7 +471,7 @@ Substituting \eqref{eq:neumann-typeI} into
     \end{bmatrix}. \label{neuTypeI}
 \end{equation}
 
-\emph{Type~II.} The derivative is specified at the shared face of cells $P = x_0$ and $W = x_{-1}$, which lies
+\emph{Type~II.} The derivative is specified at the shared face of cells $P = x_{1/2}$ and $W = x_{-1/2}$, which lies
 exactly halfway between them at $x = a$. Instead of relying on the central difference, the backwards difference scheme can be implemented and is
 second-order accurate at its center $x = a$ as written. Therefore,
 \begin{equation}
@@ -481,7 +481,7 @@ second-order accurate at its center $x = a$ as written. Therefore,
     \label{eq:neumann-typeII}
 \end{equation}
 Substituting \eqref{eq:neumann-typeII} into
-\eqref{eq:bvp-central} at $P = x_0$ gives the boundary row
+\eqref{eq:bvp-central} at $P = x_{1/2}$ gives the boundary row
 \begin{equation}
     D_{xx}\phi\big|_P
     \;\approx\;
@@ -497,11 +497,11 @@ Substituting \eqref{eq:neumann-typeII} into
         -1& 1 & 0 & \cdots & 0\\
     \end{bmatrix}
     \begin{bmatrix}
-        \phi_0 & \phi_1 & \phi_2 &  \cdots  & \phi_N
+        \phi_{1/2} & \phi_{3/2} & \phi_{5/2} &  \cdots  & \phi_{N - 1/2}
     \end{bmatrix}^T
     =
     \begin{bmatrix}
-        -\sin(x_0) + \frac{\alpha}{\Delta x}
+        -\sin(x_{1/2}) + \frac{\alpha}{\Delta x}
     \end{bmatrix}. \label{neuTypeII}
 \end{equation}
 
@@ -524,16 +524,16 @@ Now you are prepared to implement finite difference methods for a variety of cas
           0&\cdots & 0 & 0& 1 & -1
     \end{bmatrix}
     \begin{bmatrix}
-        \phi_1 \\ \phi_2 \\ \vdots \\ \vdots \\ \phi_{N-2} \\ \phi_{N-1}
+        \phi_{1/2} \\ \phi_{3/2} \\ \vdots \\ \vdots \\ \phi_{N-3/2} \\ \phi_{N-1/2}
     \end{bmatrix}
     =
     \begin{bmatrix}
-        -\sin(x_1) + \frac{\alpha}{\Delta x}  \\
-        -\sin(x_2) \\
+        -\sin(x_{1/2}) + \frac{\alpha}{\Delta x}  \\
+        -\sin(x_{3/2}) \\
         \vdots \\
                 \vdots \\
-        -\sin(x_{N-2}) \\
-        -\sin(x_{N-1}) - \frac{\beta}{\Delta x}
+        -\sin(x_{N-3/2}) \\
+        -\sin(x_{N-1/2}) - \frac{\beta}{\Delta x}
     \end{bmatrix}.
     \label{NuemannTypeIISolver}
 \end{equation}
@@ -552,7 +552,7 @@ Now you are prepared to implement finite difference methods for a variety of cas
           1& 0 & \cdots & 0 & 0& 1 & -2
     \end{bmatrix}
     \begin{bmatrix}
-        \phi_0 \\ \phi_1 \\ \vdots \\ \vdots \\ \vdots \\ \phi_{N-1} \\ \phi_N
+        \phi_0 \\ \phi_1 \\ \vdots \\ \vdots \\ \vdots \\ \phi_{N-2} \\ \phi_{N-1}
     \end{bmatrix}
     =
     \begin{bmatrix}
@@ -561,8 +561,8 @@ Now you are prepared to implement finite difference methods for a variety of cas
         \vdots \\
                 \vdots \\
                           \vdots \\
-        -\sin(x_{N-1}) \\
-        -\sin(x_N) 
+        -\sin(x_{N-2}) \\
+        -\sin(x_{N-1}) 
     \end{bmatrix}.
     \label{DoubleTypeIISolver}
 \end{equation}
@@ -570,9 +570,10 @@ Now you are prepared to implement finite difference methods for a variety of cas
 
 
 \section{Basic Numerical Implementation}
+Below are definitions of the linear systems discussed thus far. We have left the implementation of boundary conditions as an exercise. Note that dense matrices in the most basic form are defined in MATLAB and python. Neither of these should be used and are here for educational purposes only.
 
 \subsection{MATLAB}
-\begin{verbatim}
+ \begin{lstlisting}[language=matlab]
 % make grid
 a = 0;                  % left endpoint
 b = 2*pi;               % right endpoint
@@ -588,11 +589,12 @@ P = -2 * ones(n, 1);      % main diagonal
 E =      ones(n-1, 1);    % super-diagonal
 W =      ones(n-1, 1);    % sub-diagonal
 
-%%%%% OPTION 1: Basic Matrix Type
+%%%%% Basic Matrix Type
+%% DONT DO THIS - here for your reference 
 Dxx = diag(P) + diag(E, 1) + diag(W, -1);  % Places P on main diag, E on lower, and W on upper
 Dxx = Dxx / dx^2;             % divide by dx^2
 
-%%%%% OPTION 2: Sparse Matrix Type
+%%%%% OPTION 1: Sparse Matrix Type
 % this is ideal for memory -- especially as N gets large
 e = ones(n, 1);
 Dxx = spdiags([e, -2*e, e], [-1, 0, 1], n, n) / dx^2;
@@ -606,10 +608,103 @@ f = -sin(x);
 
 % solve for phi
 phi = Dxx\f
-\end{verbatim}
+ \end{lstlisting}
+
+\subsection{python}
+ \begin{lstlisting}[language=python]
+import numpy as np
+import scipy.sparse as sp
+import scipy.sparse.linalg as spla
+
+a = 0.0                       		# left endpoint
+b = 2 * np.pi                 		# right endpoint
+N = 20                        		# grid discretization count
+dx = (b - a) / N              		# grid spacing
+x = np.linspace(a, b, N + 1)  	# grid points x_0 ... x_N
+
+n = len(x)                    		# number of points (N+1)
+
+# build basic Dxx WITH NO boundary conditions
+P = -2 * np.ones(n)           		# main diagonal
+E = np.ones(n - 1)            		# super-diagonal
+W = np.ones(n - 1)            		# sub-diagonal
+
+# build right hand side
+f = -np.sin(x)
 
 
-\noindent \textcolor{Orchid}{python section coming soon :))}
+##### Basic Matrix Type
+# this matrix is dense, and inefficient for large N
+## DONT DO THIS - here for your reference 
+
+# P on main diag, E on super, W on sub
+Dxx1 = np.diag(P) + np.diag(E, 1) + np.diag(W, -1)   	
+
+# divide by dx^2
+Dxx1 = Dxx1 / dx**2       
+# copying around f for each option                           
+f1 = f.copy()
+
+###
+# IMPLEMENT BC HERE ON Dxx1 AND f1 #
+###
+
+# solve lienar system
+phi1 = np.linalg.solve(Dxx1, f1)
+
+
+##### OPTION 1: Dense, then converted to sparse (COO)
+# easy, but you still allocate the full n x n dense matrix first
+
+# P on main diag, E on super, W on sub
+Dxx2 = np.diag(P) + np.diag(E, 1) + np.diag(W, -1)
+
+# divide by dx^2
+Dxx2 = Dxx2 / dx**2
+
+# copying around f for each option     
+f2 = f.copy()
+
+###
+# IMPLEMENT BC HERE ON Dxx2 AND f2 while it is still dense #
+###
+
+# convert to sparse AFTER the BCs are set
+# this type is difficult to manipulate when sparse
+Dxx2 = sp.coo_matrix(Dxx2)                     
+phi2 = spla.spsolve(Dxx2.tocsr(), f2)
+
+
+##### OPTION 2: Build rows, cols, vals then make sparse (COO)
+# nothing dense is ever allocated -- this is the one that scales well!
+# this build can be thought of as saving (ROW, COL, VAL) for each nonzero point
+# in the matrix. every undefined point is considered zero.
+
+# build vector of row indicies
+rows = np.concatenate([np.arange(1, n),  np.arange(n), np.arange(n - 1)])
+
+# build vector of column indicies
+cols = np.concatenate([np.arange(n - 1), np.arange(n), np.arange(1, n)])
+
+# build vector of values
+vals = np.concatenate([W,  P,   E]) / dx**2
+f3 = f.copy()
+
+###
+# IMPLEMENT BC HERE ON rows, cols, vals AND f3 #
+# make sure you do this BEFORE converting to sparse
+###
+
+#convert to coo matrix
+Dxx3 = sp.coo_matrix((vals, (rows, cols)), shape=(n, n))
+
+#solve with spsolve
+phi3 = spla.spsolve(Dxx3.tocsr(), f3)
+
+ \end{lstlisting}
+
+
+
 
 
 
