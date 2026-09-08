@@ -14,7 +14,7 @@
 \usepackage{wrapfig}
 \usepackage{framed}
 \usepackage{soul}
-\usepackage{xcolor}
+\usepackage[dvipsnames]{xcolor}
 \usepackage{mdframed}
 \usepackage{comment}
 \usepackage{mathrsfs}
@@ -61,6 +61,18 @@
 
 
 \newcommand{\quo}[1]{``#1"}
+
+\usepackage{amsthm}
+\theoremstyle{remark}
+\newmdtheoremenv[
+    linewidth=0.4mm,
+    linecolor=tsorange2,
+    backgroundcolor=tsorange2!8,
+    skipabove=6pt,
+    skipbelow=6pt,
+    innertopmargin=6pt,
+    innerbottommargin=6pt
+]{remark}{Remark}
 
 %---------------------------------------------------------------------------
 % Textbook contents

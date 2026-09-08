@@ -469,10 +469,10 @@ To view a copy of this license, visit \\
  \item\ignorespaces\advance\baselineskip -1pt}
 {\end{list}\vspace{-0.5cm}}
 
-\newenvironment{remark}
-{\vspace{0.5cm}\noindent\small\it
- \marginpar{\vspace{-3mm}\includegraphics[width=1.0cm]{idea}}}
-{\vspace{0.5cm}}
+%\newenvironment{remark}
+%{\vspace{0.5cm}\noindent\small\it
+ %\marginpar{\vspace{-3mm}\includegraphics[width=1.0cm]{idea}}}
+%{\vspace{0.5cm}}
 
 % Bibliography
 %--------------------------------------------------------------------------

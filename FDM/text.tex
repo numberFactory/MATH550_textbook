@@ -2,7 +2,7 @@
 \label{chpt:FDM}
 
 Finite difference methods (FDM) are collocation methods based on Taylor
-series approximation and are used to approximate derivatives and derivative operators. They are an old and simple numerical method which become popular after the development as computers due to the sheer amount of arithmetic for application. In this chapter, we will define numerical schemes to approximate first and second derivatives. These schemes can then be extended to help solve PDEs by approximating derivatives and derivative operators ($\nabla, \nabla^2$).
+series approximation and are used to approximate derivatives and derivative operators. They are an old and simple numerical method which became popular after the development as computers due to the sheer amount of arithmetic for application. In this chapter, we will define numerical schemes to approximate first and second derivatives. These schemes can then be extended to help solve PDEs by approximating derivatives and derivative operators ($\nabla, \nabla^2$).
 \index{finite difference methods}
 \section{The Basics}
 
@@ -42,12 +42,17 @@ for $x \in [a,b]$. The finite difference approach evaluates $\phi$ at respective
 We will discuss the forward,
 backward, and central difference scheme for approximating $\phi'_i$. The former two are first-order schemes and the latter is second-order.
 \index{finite difference methods!first derivatives!forward difference}
+
+To discuss finite difference schemes, we will adopt the compass notation. For a grid point of interest $P$,
+its neighbor to the west (decreasing $x$) is $W$ and its neighbor to the
+east (increasing $x$) is $E$. 
+
 \subsection{Forward difference}
 Following from \eqref{eq:taylorForward}, $\phi_{i + 1}$ can be approximated as 
 $$
 \phi_{i + 1} = \phi_i + \phi'_i \Delta x + \frac{\phi''_i}{2} (\Delta x^2) + \hdots 
 $$
-Solving this aprroximation for $\phi'_i$ yields
+Solving this approximation for $\phi'_i$ yields
 \[
 \phi'_i = \frac{\phi_{i+1}-\phi_i}{\Delta x} - R,
 \qquad
@@ -57,13 +62,20 @@ where $R$ is the local truncation error. The magnitude of error $R$ is controlle
 retained term $\tfrac{1}{2}\phi''_i\,\Delta x$, which is proportional to
 $\Delta x$. This error is generally recorded using Big~$\mathcal{O}$ notation,
 \begin{equation}
-\phi'_i = \frac{\phi_{i+1}-\phi_i}{\Delta x} + \mathcal{O}(\Delta x).
+\phi'_i = \frac{\phi_{i+1}-\phi_i}{\Delta x} + \mathcal{O}(\Delta x), \quad \phi'_P = \frac{\phi_{E}-\phi_P}{\Delta x} + \mathcal{O}(\Delta x),
 \label{eq:fdFO1}
 \end{equation}
 Equation~\eqref{eq:fdFO1} is the \emph{first-order forward
-difference} approximation of $\phi'_i$. The word forward refers to the fact that
+difference} approximation of $\phi'_i$ and the points of interest are highlighted in Figure~\ref{fig:forwardDiff}. The word forward refers to the fact that
 the Taylor series around $x_i$ estimates $\phi$ at the next or forward point $x_{i+1}$. Note how derivative approximation resembles the limit
 definition of the derivative!
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.33\textwidth, page=7]{FDM/images/1DFDMv5.pdf}
+    \caption{The forward difference stencil, highlighting the used points $P, E$ in cyan. }
+    \label{fig:forwardDiff}
+\end{figure}
 
 \index{finite difference methods!first derivatives!backward difference}
 
@@ -77,12 +89,19 @@ Estimating the previous point $\phi_{i - 1}$ in terms of \eqref{eq:taylorForward
 \end{equation}
 The odd terms of the series are now negative, as $(x_i - \Delta x) - x_i = -\Delta x$. Solving \ref{eq:taylorBackward} for $\phi'(x_i)$ gives the \emph{first-order backward difference},
 \begin{equation}
-\phi'(x_i) = \frac{\phi_i-\phi_{i-1}}{\Delta x} + \mathcal{O}(\Delta x).
+\phi'(x_i) = \frac{\phi_i-\phi_{i-1}}{\Delta x} + \mathcal{O}(\Delta x), \quad \phi'(x_P) = \frac{\phi_P-\phi_{W}}{\Delta x} + \mathcal{O}(\Delta x).
 \label{eq:fdBO1}
 \end{equation}
 
-The word backwards refers to the fact that
-the Taylor series around $x_i$ estimates $\phi$ at the last or backward point $x_{i+1}$.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.33\textwidth, page=4]{FDM/images/1DFDMv5.pdf}
+    \caption{The backward difference stencil, highlighting the used points $P, W$ in cyan. }
+    \label{fig:backwardDiff}
+\end{figure}
+
+The stencil for this scheme is showcased in Figure~\ref{fig:backwardDiff}. The word backwards refers to the fact that
+the Taylor series around $x_i$ estimates $\phi$ at the last or backward point $x_{i-1}$.
 
 \index{finite difference methods!first derivatives!central difference}
 \subsection{Central difference}
@@ -98,6 +117,20 @@ Adding  \eqref{eq:add1} and \eqref{eq:add2} and dividing by a factor of two obta
 \phi'(x_i) = \frac{\phi_{i+1}-\phi_{i-1}}{2\,\Delta x} - \frac{\phi'''(x_i)}{6}\,\Delta x^2 + \cdots = \frac{\phi_{i+1}-\phi_{i-1}}{2\,\Delta x} + \mathcal{O}(\Delta x^2).
 \label{eq:fdCentral}
 \end{equation}
+
+Using our compass notation, the central difference scheme is written as 
+$$
+\phi'(x_P) = \frac{\phi_{E}-\phi_{W}}{2\,\Delta x} + \mathcal{O}(\Delta x^2).
+$$
+This stencil is highlighted in Figure~\ref{fig:centralDiff}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.33\textwidth, page=8]{FDM/images/1DFDMv5.pdf}
+    \caption{The central difference stencil, highlighting the used points $E, W$ in cyan. }
+    \label{fig:centralDiff}
+\end{figure}
+
 
 \section{Second Derivative Approximations}
 \label{sec:secondderiv}
@@ -126,6 +159,459 @@ difference scheme for the second derivative:
 + \mathcal{O}(\Delta x^2).
 \label{eq:fdSecond}
 \end{equation}
+
+
+Consider the stencils shown so far. How would the stencil for this method look? \\
+
+So far we have built finite difference approximations of the first and
+second derivatives. On their own, these approximations only tell us how
+$\phi$ changes locally; to actually solve a differential equation
+we must define how $\phi$ behaves at the edges of the domain through \emph{boundary conditions} which rely on \emph{ghost points}. We will use an example problem in the next section to define two styles of spatial discretization and how to use ghost points to define boundary conditions.
+
+\section{An Example One-Dimensional Problem}
+\label{sec:bvp-example}
+
+Consider the second-derivative operator $D_{xx} \equiv \frac{d^2}{dx^2}$
+acting on a smooth function $\phi : [a,b] \to \mathbb{R}$. We want to use finite difference methods to solve the following for $\phi$:
+\begin{equation}
+    D_{xx}\phi = -\sin(x), \qquad x \in [a,b]
+    \label{eq:bvp-model}
+\end{equation}
+Equation~\eqref{eq:bvp-model} tells us that the second
+derivative of $\phi$ equals $f(x) = -\sin(x)$. Integrating $f$ twice reveals that
+\begin{align}
+    \phi'(x) &= \cos(x) + c_1, \\
+    \phi(x)  &= \sin(x) + c_1\,x + c_2,
+    \label{eq:bvp-general}
+\end{align}
+where $c_1, c_2 \in \mathbb{R}$ are constants of integration. Notice that
+\eqref{eq:bvp-general} is not a single solution but an entire
+two-parameter family: any choice of $c_1$ and $c_2$ satisfies
+\eqref{eq:bvp-model}. 
+
+
+\begin{remark}
+To single out a solution we must supply extra pieces of
+information through boundary conditions.
+\index{boundary conditions}
+\end{remark}
+
+Boundary conditions are almost always imposed at the ends of the domain, which are $x=a$ and $x=b$ for this problem. For example, on $[a,b] = [0, 2\pi]$ with the conditions $\phi(0)=0$ and
+$\phi(2\pi)=0$, the two constants in \eqref{eq:bvp-general} are forced to
+$c_1 = c_2 = 0$, leaving the unique exact solution $\phi(x) = \sin(x)$.
+We will return to this case as a convenient way to check our numerical
+schemes.
+
+We can think about this need for boundary conditions in terms of our discrete grid as well. Suppose we sample $\phi$ on the equally spaced grid seen in Figure~\ref{fig:standardgrid} and approximate
+$D_{xx}\phi$ at each grid point $P$ using the second-order central difference
+\begin{equation}
+    D_{xx}\phi\big|_{P}
+    \;\approx\;
+    \frac{\phi_{E} - 2\phi_P + \phi_{W}}{\Delta x^2},
+    \label{eq:bvp-central}
+\end{equation}
+
+we would end up with this linear system:
+\begin{equation}
+    \frac{1}{\Delta x^2}
+    \begin{bmatrix}
+        ? & ? & ?& ?& \cdots & ?\\
+        1 & -2 & 1 &0 &\cdots & 0 \\
+         \vdots & \ddots & \ddots & \ddots & \ddots & \vdots\\
+          \vdots & \ddots & \ddots & \ddots & \ddots & \vdots\\
+          0&\cdots & 0 & 1 & -2 & 1 \\
+          ?&\cdots & ? & ?& ? & -?
+    \end{bmatrix}
+    \begin{bmatrix}
+        \phi_0 \\ \phi_1 \\ \vdots \\ \vdots \\ \phi_{N-1} \\ \phi_N
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        -\sin(x_0)  \\
+        -\sin(x_2) \\
+        \vdots \\
+                \vdots \\
+        -\sin(x_{N-1}) \\
+        -\sin(x_N) 
+    \end{bmatrix}.
+    \label{baseFDM}
+\end{equation}
+
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth, page=9]{FDM/images/1DFDMv5.pdf}
+    \caption{A standard grid discretization of some real-valued domain $[a,b]$. The domain is discretized by $N +1$ equally-spaced points a distance $\Delta x$ apart. Exterior points (orange) at domain boundaries $x=a,b$ highlighted, as well as ghost points $x_{-1}$ and $x_{N + 1}$.}
+    \label{fig:standardgrid}
+\end{figure}
+
+At any \emph{interior} (cyan) point the three values $W, P, E$
+are all available and \eqref{eq:bvp-central} is well defined. But at the
+\emph{exterior} (orange) grid points $x_0$ and $x_N$, the stencil calls for $\phi_{-1}$ and $\phi_{N+1}$... these values lie outside the grid! The linear system is then left with more unknowns than equations, so our linear system is under-determined\footnote{Note that if we were to not notice this, and set $D_{xx}(0,0) = 2, D_{xx}(0, 1) = -1,$ etc., the system would solve and give a real solution. Consider why this is, and determine what it implies about the boundaries!}. To create a well-determined system and force a unique solution, we must define these values that lie outside the grid, which we call \emph{ghost points}. Note that one could instead use first-order one-sided differences at the boundaries, but this lowers the order of the boundary approximation and can degrade the accuracy of the whole scheme, so it is generally avoided in favor of the ghost-point construction.
+
+Where these ghost point actually sits depends on how we lay the grid down
+relative to the boundary. The next two sections describe the two standard
+choices for grids.
+
+\index{ghost points}
+
+
+\section{Type I Grids}
+\label{sec:typeI}
+
+A \textbf{Type I} (or \emph{nodal}, \emph{vertex-centered}) grid places
+discrete points \emph{on} the boundaries $a,b$. We have been already thinking about discretization on a Type I grid, which defines discrete points $x_i \in [a,b]$ as
+\begin{equation}
+    x_i = a + i\,\Delta x, \quad i = 0,1,\dots,N,
+    \qquad \Delta x = \frac{b-a}{N},
+\end{equation}
+so that $x_0 = a$ and $x_N = b$ are themselves grid points. The ghost
+points are the two nodes obtained by stepping one $\Delta x$ past each end,
+\begin{equation}
+    x_{-1} = a - \Delta x, \qquad x_{N+1} = b + \Delta x,
+\end{equation}
+shown as the grey or first/last points in Figure~\ref{fig:typeI}. At the left boundary $x = a$ we can lay our finite difference stencil, seen as the shaded region, where
+$P = x_0$, $W = x_{-1}$, and $E = x_1$. The same idea can be applied to the right boundary $x = b$, where $P = x_N$, $E = x_{N+1}$, and $W = x_{N-1}$.
+\index{nodal grid}\index{grid!Type I}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth, page=3]{FDM/images/1DFDMv5.pdf}
+    \caption{A Type~I (nodal) grid on $[a,b]$. Interior points $x_1, \hdots, x_{N - 1}$ seen in lighter cyan and exterior points $x_0, x_N$ seen as darker orange. Ghost nodes are first and last points defined in gray and black. Finite different stencil for $P = x_0$ highlight as grey stroke, with contributors $P, E,$ and $W$ labelled.}
+    \label{fig:typeI}
+\end{figure}
+
+A defining feature of a Type~I grid is that implementing boundary conditions is direct, since
+the boundary value is a nodal value.
+
+\section{Type II Grids}
+\label{sec:typeII}
+
+A \textbf{Type II} (or \emph{cell-centered}) grid instead partitions
+$[a,b]$ into $N$ \textbf{cells} of width $\Delta x = \tfrac{b-a}{N}$ and
+places the discrete points of $x$ at the cell \emph{centers}. This results in one less discrete point when compared to Type I grids. The cell
+\emph{faces} fall on the boundaries, so no discrete point $x$ lies on the domain
+edge. The cell centers are
+\begin{equation}
+    x_i = a + \left(i + \tfrac{1}{2}\right)\Delta x,
+    \quad i = 0,1,\dots,N -1 ,
+\end{equation}
+and the faces sit at $x_{i+1/2} = a + i\,\Delta x$. This cell idea is depicted for the discrete point $x_i$ in Figure~\ref{fig:typeII}. The two boundaries are now faces of the cells $x_{0, -1}$ and $x_{(N-1), N}$, and the nearest grid point is half a spacing inside. The ghost points lie half a spacing outside each end of the domain,
+as seen by the gray and black points in Figure~\ref{fig:typeII}. At the left boundary, we can lay our finite difference stencil, seen as the gray shaded region, where $P = x_0$, $W = x_{-1}$, and $E = x_1$, and the boundary itself is the west face of $x_{0}$ and east face of $x_{-1}$.
+\index{cell-centered grid}\index{grid!Type II}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth, page=10]{FDM/images/1DFDMv5.pdf}
+    \caption{A Type~II (cell-centered) grid on $[a,b]$. Interior points $x_1, \hdots, x_{N - 2}$ seen in lighter cyan and exterior points $x_0, x_{N-1}$ seen as darker orange. Ghost nodes are first and last points defined in gray and black. Finite different stencil for $P = x_0$ highlight as grey stroke, with contributors $P, E,$ and $W$ labelled. The cell definition is labelled for $x_i$, with the diameter $\Delta x$ and region referred to as the cell face labelled.}
+    \label{fig:typeII}
+\end{figure}
+
+A defining feature for Type~II grids is that the domain boundaries sit
+\emph{exactly halfway} between the ghost points and the corresponding interior point. A difference across $W$ and $P$ is therefore naturally centered
+on the boundary. We will discuss later that layout makes first-order methods
+second-order accurate at the cell faces without any extra work.
+
+\section{Boundary Conditions}
+\label{sec:bcs}
+
+We will now define the three boundary conditions used in this text and, for
+each, give the ghost value it implies on both grid types. Throughout we
+write the prescribed left-boundary value as $\alpha \in \mathbb{R}$ and the right-boundary
+value as $\beta  \in \mathbb{R}$, and derive the left boundary in detail. The right
+boundary follows by symmetry and is left as an exercise.
+
+\subsection{Periodic Boundaries}
+\label{sec:bc-periodic}
+
+A \textbf{periodic} boundary condition treats the domain as a loop: the solution $\phi$
+and its derivatives at $x=a$ match those at $x=b$. This is implemented by setting ghost points as the opposite end of the domain.
+\index{periodic boundary condition}\\
+
+\emph{Type~I.} Because the nodes $x_0=a$ and $x_N=b$ represent the same
+physical location, we carry the $N$ distinct unknowns
+$\phi_0,\dots,\phi_{N-1}$ and remove $\phi_N \equiv \phi_0$ from our system as a known value. Stepping
+west past the first node wraps around to the last interior node, so the
+ghost is
+\begin{equation}
+    \phi_W = \phi_{-1} \equiv \phi_{N-1}.
+\end{equation}
+For the first row of the system~\ref{baseFDM}, this would look like 
+\begin{equation}
+    \frac{1}{\Delta x^2}
+    \begin{bmatrix}
+        -2 & 1 & 0& 0& \cdots & 0 & 1\\
+    \end{bmatrix}
+    \begin{bmatrix}
+        \phi_0 & \phi_1 &  \phi_2 & \phi_3 &  \cdots & \phi_{N-1}
+    \end{bmatrix}^T
+    =
+    \begin{bmatrix}
+        -\sin(x_1)
+    \end{bmatrix}. \label{periodQueen}
+\end{equation}
+
+
+\emph{Type~II.} The cells wrap directly: the left ghost cell is a copy of
+the last interior cell and the right ghost cell is a copy of the first,
+\begin{equation}
+    \phi_W = \phi_{-1} \equiv \phi_{N-1}
+\end{equation}
+This would be imposed just the same as \eqref{periodQueen}.
+\subsection{Dirichlet}
+\label{sec:bc-dirichlet}
+
+
+A \textbf{Dirichlet} boundary condition prescribes a \emph{value} $\alpha$ of $\phi$ at
+the boundary, such that $\phi(a) = \alpha$. Consider how this might be described in two different ways within our linear system for the Type I grid, and why there is only one method for a Type II grid.
+\index{Dirichlet boundary condition} \\
+
+\emph{Type~I.} The boundary value lives at the node $P = x_0$, so it is
+imposed directly,
+\begin{equation}
+    \phi_P = \alpha .
+\end{equation}
+One method for implementing this condition is by writing the first row of the system~\eqref{baseFDM} as 
+
+\begin{equation}
+    \frac{1}{\Delta x^2}
+    \begin{bmatrix}
+        1& 0 & \cdots & 0\\
+    \end{bmatrix}
+    \begin{bmatrix}
+        \phi_0 & \phi_1 &  \cdots  & \phi_N
+    \end{bmatrix}^T
+    =
+    \begin{bmatrix}
+        \alpha
+    \end{bmatrix}. \label{basicDir}
+\end{equation}
+
+\noindent Alternatively, we can treat $\phi_0 = \alpha$ and $\phi_N = \beta$ as known and
+remove them from the unknowns, leaving a linear system for $\phi_1,\dots,\phi_{N-1}$ and removing the first and last rows of the system~\eqref{baseFDM}. Moving the
+known value across the linear system, the (now first) row for $\phi_1$ becomes
+\begin{equation}
+    \frac{1}{\Delta x^2}
+    \begin{bmatrix}
+        -2& 1 & 0 & \cdots & 0\\
+    \end{bmatrix}
+    \begin{bmatrix}
+        \phi_1 & \phi_2 & \phi_3 &  \cdots  & \phi_{N-1}
+    \end{bmatrix}^T
+    =
+    \begin{bmatrix}
+        -\sin(x_1) - \frac{\alpha}{\Delta x^2}
+    \end{bmatrix}. \label{rhsDirTop}
+\end{equation}
+\noindent The latter of these two approaches is ideal and should be chosen for homework in this class.\\
+
+\emph{Type~II.} 
+On a Type~II grid there is no discrete point at the boundary, so we can only implement the condition on the right-hand side of our linear system. We approximate the boundary as the midpoint between $x_{-1}$ and $x_{0}$:
+$$
+\alpha = \frac{\phi_{-1} + \phi_0}{2} \implies \phi_{-1} = 2\alpha - \phi_0
+$$
+Plugging this into \eqref{eq:bvp-central} yields
+\begin{equation}
+    \frac{-3\phi_0 + \phi_1}{\Delta x^2} = -\sin(x_0) - \frac{2\alpha}{\Delta x^2}.
+\end{equation}
+
+\noindent The first row of our system~\eqref{baseFDM} then becomes
+
+\begin{equation}
+    \frac{1}{\Delta x^2}
+    \begin{bmatrix}
+        -3& 1 & 0 & \cdots & 0\\
+    \end{bmatrix}
+    \begin{bmatrix}
+        \phi_0 & \phi_1 & \phi_2 &  \cdots  & \phi_{N-1}
+    \end{bmatrix}^T
+    =
+    \begin{bmatrix}
+        -\sin(x_0) - \frac{2\alpha}{\Delta x^2}
+    \end{bmatrix}. \label{dirTypeII}
+\end{equation}
+
+\subsection{Neumann}
+\label{sec:bc-neumann}
+
+A \textbf{Neumann} condition prescribes the first derivative at
+the boundary, $\phi'(a) = \alpha$.
+\index{Neumann boundary condition}\\
+
+\emph{Type~I.} Since we have the boundary as a discrete point $x_0 = a$, we can implement the central difference scheme for the first derivate \eqref{eq:fdCentral} around $a$ :
+
+\begin{equation}
+    \phi'(a) \approx \frac{\phi_E - \phi_W}{2\Delta x} = \alpha
+    \quad\Longrightarrow\quad
+    \phi_W = \phi_E - 2\,\Delta x\,\alpha .
+    \label{eq:neumann-typeI}
+\end{equation}
+Substituting \eqref{eq:neumann-typeI} into
+\eqref{eq:bvp-central} at $P = x_0$ gives
+\begin{equation}
+    D_{xx}\phi\big|_P
+    \;\approx\;
+    \frac{2\phi_E - 2\phi_P}{\Delta x^2} - \frac{2\alpha}{\Delta x}.
+    \label{eq:neumann-typeI-row}
+\end{equation}
+
+\noindent The first row of our system~\eqref{baseFDM} then becomes
+
+\begin{equation}
+    \frac{1}{\Delta x^2}
+    \begin{bmatrix}
+        -2& 2 & 0 & \cdots & 0\\
+    \end{bmatrix}
+    \begin{bmatrix}
+        \phi_0 & \phi_1 & \phi_2 &  \cdots  & \phi_N
+    \end{bmatrix}^T
+    =
+    \begin{bmatrix}
+        -\sin(x_0) + \frac{2\alpha}{\Delta x}
+    \end{bmatrix}. \label{neuTypeI}
+\end{equation}
+
+\emph{Type~II.} The derivative is specified at the shared face of cells $P = x_0$ and $W = x_{-1}$, which lies
+exactly halfway between them at $x = a$. Instead of relying on the central difference, the backwards difference scheme can be implemented and is
+second-order accurate at its center $x = a$ as written. Therefore,
+\begin{equation}
+    \phi'(a) \approx \frac{\phi_P - \phi_W}{\Delta x} = \alpha
+    \quad\Longrightarrow\quad
+    \phi_W = \phi_P - \Delta x\,\alpha .
+    \label{eq:neumann-typeII}
+\end{equation}
+Substituting \eqref{eq:neumann-typeII} into
+\eqref{eq:bvp-central} at $P = x_0$ gives the boundary row
+\begin{equation}
+    D_{xx}\phi\big|_P
+    \;\approx\;
+    \frac{\phi_E - \phi_P}{\Delta x^2} - \frac{\alpha}{\Delta x}.
+    \label{eq:neumann-typeII-row}
+\end{equation}
+
+\noindent The first row of our system~\eqref{baseFDM} then becomes
+
+\begin{equation}
+    \frac{1}{\Delta x^2}
+    \begin{bmatrix}
+        -1& 1 & 0 & \cdots & 0\\
+    \end{bmatrix}
+    \begin{bmatrix}
+        \phi_0 & \phi_1 & \phi_2 &  \cdots  & \phi_N
+    \end{bmatrix}^T
+    =
+    \begin{bmatrix}
+        -\sin(x_0) + \frac{\alpha}{\Delta x}
+    \end{bmatrix}. \label{neuTypeII}
+\end{equation}
+
+
+\subsection{Assembling the Discrete System}
+\label{sec:assembly}
+
+
+Now you are prepared to implement finite difference methods for a variety of cases. Let's build two linear systems to solve \eqref{eq:bvp-model}. 
+
+\subsubsection*{Neumann Conditions on a Type II Grid}
+\begin{equation}
+    \frac{1}{\Delta x^2}
+    \begin{bmatrix}
+        -1 & 1 & 0& 0& \cdots & 0\\
+        1 & -2 & 1 &0 &\cdots & 0 \\
+         \vdots & \ddots & \ddots & \ddots & \ddots & \vdots\\
+          \vdots & \ddots & \ddots & \ddots & \ddots & \vdots\\
+          0&\cdots & 0 & 1 & -2 & 1 \\
+          0&\cdots & 0 & 0& 1 & -1
+    \end{bmatrix}
+    \begin{bmatrix}
+        \phi_1 \\ \phi_2 \\ \vdots \\ \vdots \\ \phi_{N-2} \\ \phi_{N-1}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        -\sin(x_1) + \frac{\alpha}{\Delta x}  \\
+        -\sin(x_2) \\
+        \vdots \\
+                \vdots \\
+        -\sin(x_{N-2}) \\
+        -\sin(x_{N-1}) - \frac{\beta}{\Delta x}
+    \end{bmatrix}.
+    \label{NuemannTypeIISolver}
+\end{equation}
+
+
+\subsubsection*{Periodic on a Type I Grid}
+\begin{equation}
+    \frac{1}{\Delta x^2}
+    \begin{bmatrix}
+        -2 & 1 & 0& 0& \cdots & 0 & 1\\
+        1 & -2 & 1 &0 &\cdots & 0 & 0\\
+         \vdots & \ddots & \ddots & \ddots & \ddots& \ddots & \vdots\\
+          \vdots & \ddots & \ddots & \ddots & \ddots & \ddots& \vdots\\
+                    \vdots & \ddots & \ddots & \ddots & \ddots &  \ddots & \vdots\\
+          0& 0 &\cdots & 0 & 1 & -2 & 1 \\
+          1& 0 & \cdots & 0 & 0& 1 & -2
+    \end{bmatrix}
+    \begin{bmatrix}
+        \phi_0 \\ \phi_1 \\ \vdots \\ \vdots \\ \vdots \\ \phi_{N-1} \\ \phi_N
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        -\sin(x_0)  \\
+        -\sin(x_1) \\
+        \vdots \\
+                \vdots \\
+                          \vdots \\
+        -\sin(x_{N-1}) \\
+        -\sin(x_N) 
+    \end{bmatrix}.
+    \label{DoubleTypeIISolver}
+\end{equation}
+
+
+
+\section{Basic Numerical Implementation}
+
+\subsection{MATLAB}
+\begin{verbatim}
+% make grid
+a = 0;                  % left endpoint
+b = 2*pi;               % right endpoint
+N = 20;                 % grid discretization count
+dx = (b - a) / N;       % grid spacing
+x = a:dx:b;             % grid points x_0 ... x_N  (row vector, length N+1)
+x = x';               % make x a column vector
+
+n = length(x);          % number of points (N+1)
+
+% build basic Dxx WITH NO boundary conditions
+P = -2 * ones(n, 1);      % main diagonal
+E =      ones(n-1, 1);    % super-diagonal
+W =      ones(n-1, 1);    % sub-diagonal
+
+%%%%% OPTION 1: Basic Matrix Type
+Dxx = diag(P) + diag(E, 1) + diag(W, -1);  % Places P on main diag, E on lower, and W on upper
+Dxx = Dxx / dx^2;             % divide by dx^2
+
+%%%%% OPTION 2: Sparse Matrix Type
+% this is ideal for memory -- especially as N gets large
+e = ones(n, 1);
+Dxx = spdiags([e, -2*e, e], [-1, 0, 1], n, n) / dx^2;
+
+% build right hand side 
+f = -sin(x);
+
+%%%
+%IMPLEMENT BC HERE ON Dxx AND f%
+%%%
+
+% solve for phi
+phi = Dxx\f
+\end{verbatim}
+
+
+\noindent \textcolor{Orchid}{python section coming soon :))}
+
+
 
 
 
