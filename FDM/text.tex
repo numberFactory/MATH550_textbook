@@ -8,7 +8,7 @@ series approximation and are used to approximate derivatives and derivative oper
 
 \begin{wrapfigure}{r}{0.4\textwidth}
 \centering
-\includegraphics[width=0.38\textwidth, page=1]{FDM/images/1DFDMv5.pdf}
+\includegraphics[width=0.38\textwidth, page=1]{FDM/images/1DFDMv6.pdf}
 \caption{A smooth function $\phi$ sampled on the equally spaced grid
 $\{x_i\}$ partitioning $[a,b]$. $\phi$ is discretely sampled on the grid, where
 $\phi_i \equiv \phi(x_i)$ .}
@@ -72,7 +72,7 @@ definition of the derivative!
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.33\textwidth, page=7]{FDM/images/1DFDMv5.pdf}
+    \includegraphics[width=0.33\textwidth, page=7]{FDM/images/1DFDMv6.pdf}
     \caption{The forward difference stencil, highlighting the used points $P, E$ in cyan. }
     \label{fig:forwardDiff}
 \end{figure}
@@ -95,7 +95,7 @@ The odd terms of the series are now negative, as $(x_i - \Delta x) - x_i = -\Del
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.33\textwidth, page=4]{FDM/images/1DFDMv5.pdf}
+    \includegraphics[width=0.33\textwidth, page=4]{FDM/images/1DFDMv6.pdf}
     \caption{The backward difference stencil, highlighting the used points $P, W$ in cyan. }
     \label{fig:backwardDiff}
 \end{figure}
@@ -126,7 +126,7 @@ This stencil is highlighted in Figure~\ref{fig:centralDiff}.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.33\textwidth, page=8]{FDM/images/1DFDMv5.pdf}
+    \includegraphics[width=0.33\textwidth, page=8]{FDM/images/1DFDMv6.pdf}
     \caption{The central difference stencil, highlighting the used points $E, W$ in cyan. }
     \label{fig:centralDiff}
 \end{figure}
@@ -135,7 +135,7 @@ This stencil is highlighted in Figure~\ref{fig:centralDiff}.
 \section{Second Derivative Approximations}
 \label{sec:secondderiv}
 \index{finite difference methods!second derivatives!central difference}
-To approximate $\phi''_i$ we again estimate in the forward and backward directions:
+To approximate $\phi''_i$ we estimate in the forward and backward directions:
 \begin{align}
 \phi_{i+1} &= \phi_i + \phi'_i\,\Delta x
 + \frac{\phi''_i}{2}\,\Delta x^2
@@ -161,14 +161,11 @@ difference scheme for the second derivative:
 \end{equation}
 
 
-Consider the stencils shown so far. How would the stencil for this method look? \\
-
-So far we have built finite difference approximations of the first and
-second derivatives. On their own, these approximations only tell us how
+On their own, these approximations only tell us how
 $\phi$ changes locally; to actually solve a differential equation
 we must define how $\phi$ behaves at the edges of the domain through \emph{boundary conditions} which rely on \emph{ghost points}. We will use an example problem in the next section to define two styles of spatial discretization and how to use ghost points to define boundary conditions.
 
-\section{An Example One-Dimensional Problem}
+\chapter{One-Dimensional FDMs in Practice}
 \label{sec:bvp-example}
 
 Consider the second-derivative operator $D_{xx} \equiv \frac{d^2}{dx^2}$
@@ -240,7 +237,7 @@ we would end up with this linear system:
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.9\textwidth, page=9]{FDM/images/1DFDMv5.pdf}
+    \includegraphics[width=0.9\textwidth, page=9]{FDM/images/1DFDMv6.pdf}
     \caption{A standard grid discretization of some real-valued domain $[a,b]$. The domain is discretized by $N +1$ equally-spaced points a distance $\Delta x$ apart. Exterior points (orange) at domain boundaries $x=a,b$ highlighted, as well as ghost points $x_{-1}$ and $x_{N + 1}$.}
     \label{fig:standardgrid}
 \end{figure}
@@ -276,7 +273,7 @@ $P = x_0$, $W = x_{-1}$, and $E = x_1$. The same idea can be applied to the righ
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.9\textwidth, page=3]{FDM/images/1DFDMv5.pdf}
+    \includegraphics[width=0.9\textwidth, page=3]{FDM/images/1DFDMv6.pdf}
     \caption{A Type~I (nodal) grid on $[a,b]$. Interior points $x_1, \hdots, x_{N - 1}$ seen in lighter cyan and exterior points $x_0, x_N$ seen as darker orange. Ghost nodes are first and last points defined in gray and black. Finite different stencil for $P = x_0$ highlight as grey stroke, with contributors $P, E,$ and $W$ labelled.}
     \label{fig:typeI}
 \end{figure}
@@ -302,7 +299,7 @@ as seen by the gray and black crosses in Figure~\ref{fig:typeII}. At the left bo
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.9\textwidth, page=10]{FDM/images/1DFDMv5.pdf}
+    \includegraphics[width=0.9\textwidth, page=10]{FDM/images/1DFDMv6.pdf}
     \caption{A Type~II (cell-centered) grid on $[a,b]$ shown as stars. Interior points $x_{3/2}, \hdots, x_{N - 3/2}$ seen in lighter cyan and exterior points $x_{1/2}, x_{N-1/2}$ seen as darker orange. Ghost nodes are first and last points defined in gray and black. Finite different stencil for $P = x_{1/2}$ highlight as grey stroke, with contributors $P, E,$ and $W$ labelled. The cell definition is labelled for $x_{i + 1/2}$, with the diameter $\Delta x$ and region referred to as the cell face labelled.}
     \label{fig:typeII}
 \end{figure}
@@ -328,7 +325,7 @@ A \textbf{periodic} boundary condition treats the domain as a loop: the solution
 and its derivatives at $x=a$ match those at $x=b$. This is implemented by setting ghost points as the opposite end of the domain.
 \index{periodic boundary condition}\\
 
-\emph{Type~I.} Because the nodes $x_0=a$ and $x_N=b$ represent the same
+\paragraph{Type~I.} Because the nodes $x_0=a$ and $x_N=b$ represent the same
 physical location, we carry the $N$ distinct unknowns
 $\phi_0,\dots,\phi_{N-1}$ and remove $\phi_N \equiv \phi_0$ from our system as a known value. Stepping
 west past the first node wraps around to the last interior node, so the
@@ -352,7 +349,7 @@ For the first row of the system~\ref{baseFDM}, this would look like
 \end{equation}
 
 
-\emph{Type~II.} The cells wrap directly: the left ghost cell is a copy of
+\paragraph{Type~II.} The cells wrap directly: the left ghost cell is a copy of
 the last interior cell and the right ghost cell is a copy of the first,
 \begin{equation}
     \phi_W = \phi_{-1/2} \equiv \phi_{N-1/2}
@@ -366,7 +363,7 @@ A \textbf{Dirichlet} boundary condition prescribes a \emph{value} $\alpha$ of $\
 the boundary, such that $\phi(a) = \alpha$. Consider how this might be described in two different ways within our linear system for the Type I grid, and why there is only one method for a Type II grid.
 \index{Dirichlet boundary condition} \\
 
-\emph{Type~I.} The boundary value lives at the node $P = x_0$, so it is
+\paragraph{Type~I.} The boundary value lives at the node $P = x_0$, so it is
 imposed directly,
 \begin{equation}
     \phi_P = \alpha .
@@ -405,14 +402,14 @@ known value across the linear system, the (now first) row for $\phi_1$ becomes
 \end{equation}
 Both methods are equivalent.
 
-\emph{Type~II.} 
+\paragraph{Type~II.} 
 On a Type~II grid there is no discrete point at the boundary, so we can only implement the condition on the right-hand side of our linear system. We approximate the boundary as the midpoint between $x_{-1/2}$ and $x_{1/2}$:
 $$
 \alpha = \frac{\phi_{-1/2} + \phi_{1/2}}{2} \implies \phi_{-1/2} = 2\alpha - \phi_{1/2}
 $$
 Plugging this into \eqref{eq:bvp-central} yields
 \begin{equation}
-    \frac{-3\phi_{1/2} + \phi_{3/2}}{\Delta x^2} = -\sin(x_{1/2}) - \frac{2\alpha}{\Delta x^2}.
+    \frac{-3\phi_{1/2} + \phi_{3/2}}{\Delta x^2} = -\sin(x_{1/2}) - \frac{2\alpha}{\Delta x^2}. \label{eq:TypeIIDir}
 \end{equation}
 
 \noindent The first row of our system~\eqref{baseFDM} then becomes
@@ -438,7 +435,7 @@ A \textbf{Neumann} condition prescribes the first derivative at
 the boundary, $\phi'(a) = \alpha$.
 \index{Neumann boundary condition}\\
 
-\emph{Type~I.} Since we have the boundary as a discrete point $x_0 = a$, we can implement the central difference scheme for the first derivate \eqref{eq:fdCentral} around $a$ :
+\paragraph{Type~I.} Since we have the boundary as a discrete point $x_0 = a$, we can implement the central difference scheme for the first derivate \eqref{eq:fdCentral} around $a$ :
 
 \begin{equation}
     \phi'(a) \approx \frac{\phi_E - \phi_W}{2\Delta x} = \alpha
@@ -471,7 +468,7 @@ Substituting \eqref{eq:neumann-typeI} into
     \end{bmatrix}. \label{neuTypeI}
 \end{equation}
 
-\emph{Type~II.} The derivative is specified at the shared face of cells $P = x_{1/2}$ and $W = x_{-1/2}$, which lies
+\paragraph{Type~II.} The derivative is specified at the shared face of cells $P = x_{1/2}$ and $W = x_{-1/2}$, which lies
 exactly halfway between them at $x = a$. Instead of relying on the central difference, the backwards difference scheme can be implemented and is
 second-order accurate at its center $x = a$ as written. Therefore,
 \begin{equation}
@@ -702,9 +699,627 @@ Dxx3 = sp.coo_matrix((vals, (rows, cols)), shape=(n, n))
 phi3 = spla.spsolve(Dxx3.tocsr(), f3)
 
  \end{lstlisting}
+ 
+ 
+
+\chapter{Two-Dimensional FDMs in Practice}
+
+
+Chapter~\ref{chpt:FDM} derived finite difference approximations of
+first and second derivatives in one dimension and used ghost
+points to impose boundary conditions on Type~I and Type~II grids. Almost
+everything we need for two dimensions is already in hand. This chapter reuses the same Taylor
+expansions, compass notation, and ghost-point boundary-condition system to implement finite difference methods on two-dimensional domains.
+We discuss how to arrange a two-dimensional grid of unknowns into a single
+vector, assemble the resulting matrix, and manage boundary conditions, especially at the corners.
+
+\index{finite difference methods!two dimensions}
 
 
 
+
+\index{Laplacian}
+We will consider the two-dimensional
+Poisson problem and use it to define Dirichlet, Neumann, and periodic
+boundary conditions on both Type~I and II grids.
+
+
+
+Let $\Omega = [a,b]\times[c,d]\subset\mathbb{R}^2$ be a two-dimensional domain. Given a
+function $f:\Omega\to\mathbb{R}$, we aim to find a function $\phi:\Omega\to\mathbb{R}$
+satisfying
+\begin{equation}
+    \nabla^2\phi
+    \;=\;
+    \frac{\partial^2\phi}{\partial x^2}
+    + \frac{\partial^2\phi}{\partial y^2}
+    \;=\; f(x,y),
+    \qquad (x,y)\in\Omega,
+    \label{eq:2Dpoisson}
+\end{equation}
+and user-defined boundary condition on the domain's surface $\partial\Omega$. Equation
+\eqref{eq:2Dpoisson} is the natural two-dimensional cousin of the model
+problem $D_{xx}\phi=-\sin(x)$ from Section~\ref{sec:bvp-example} and the boundary condition is what singles out a unique
+solution, just as
+in one dimension.
+
+\subsection*{A verification case: manufactured solutions}
+\index{manufactured solution}
+Before solving this system for an unknown $\phi$, we would like a case whose exact answer
+we already know to measure the error of the numerical method. This approach is called the \emph{method of manufactured solutions}: we choose a smooth
+$\phi$, substitute it into \eqref{eq:2Dpoisson} to define the forcing function
+$f$, and read the boundary data off of $\phi$ directly. THis method allows us to find bugs in our code, verify error, and give confidence in the method. Throughout this chapter we will choose
+\begin{equation}
+    \phi(x,y) = \sin(x)\sin(y)
+    \qquad\text{on}\qquad
+    \Omega = [0,2\pi]\times[0,2\pi].
+    \label{eq:2Dmanufactured}
+\end{equation}
+To obtain the forcing function $f$ that satisfies our chosen $\phi$, we analytically evaluate the left-hand side of \eqref{eq:2Dpoisson} to obtain
+\begin{equation}
+    f(x,y) = -2\sin(x)\sin(y).
+    \label{eq:2Dforcing}
+\end{equation}
+The function $\phi$ provides information on how to test different boundary conditions. Homogeneous Dirichlet conditions (i.e., Dirichlet on all sides of the domain) can be conveniently tested, as $\sin(0)=\sin(2\pi)=0$. The normal
+derivative of $\phi$, $\cos(x)\sin(y)$ or $\sin(x)\cos(y)$ depending on the edge, gives
+us ready-made Neumann conditions, and \eqref{eq:2Dmanufactured} is $2\pi$-periodic
+in both directions, so the same field also serves as a periodic test. 
+
+\begin{remark}
+A manufactured solution tests your discretization by showing whether the scheme converges at the expected order.
+\end{remark}
+
+\section{The Five-Point Laplacian}
+\label{sec:fivepoint}
+\index{five-point stencil}
+\index{finite difference methods!second derivatives!central difference}
+
+We discretize $\Omega$ with a grid that is equally spaced in $x$ and $y$.
+Reconsidering the Type~I grid (nodal), we define
+\begin{equation}
+    x_i = a + i\,\Delta x,\quad i=0,\dots,N_x,
+    \qquad
+    y_j = c + j\,\Delta y,\quad j=0,\dots,N_y,
+    \label{eq:2Dgrid}
+\end{equation}
+with $\Delta x = (b-a)/N_x$ and $\Delta y = (d-c)/N_y$. As in one dimension we
+write $\phi_{i,j}\equiv\phi(x_i,y_j)$ for the unknown grid values.
+
+The Laplacian ($\nabla^2$) operation in \eqref{eq:2Dpoisson} is a sum of two second
+derivatives of $\phi$, one with respect to $x$ and one with respect to $y$. These derivatives are by themselves the
+one-dimensional operator we already know how to approximate ($D_{xx}$). To extend this to 2D, we can simply apply the
+second-order central difference \eqref{eq:fdSecond} in the $x$ direction
+(holding $j$ fixed) and again in the $y$ direction (holding $i$ fixed), such that
+\begin{equation}
+    \nabla^2\phi\big|_{i,j}
+    \approx
+    \frac{\phi_{i+1,j}-2\phi_{i,j}+\phi_{i-1,j}}{\Delta x^2}
+    +
+    \frac{\phi_{i,j+1}-2\phi_{i,j}+\phi_{i,j-1}}{\Delta y^2}.
+    \label{eq:5pt}
+\end{equation}
+This is the \emph{five-point Laplacian} stencil. It couples each point to its four
+nearest neighbors and carries a local truncation error of
+$\mathcal{O}(\Delta x^2) + \mathcal{O}(\Delta y^2)$, inherited directly from
+the 1D scheme.
+
+Our compass notation extends naturally as well. For a point of interest $P$, keep the
+east ($E$, increasing $x$) and west ($W$, decreasing $x$) neighbors of
+Chapter~\ref{chpt:FDM}, and add the \emph{north} ($N$, increasing $y$) and
+\emph{south} ($S$, decreasing $y$) neighbors. In this notation,
+\begin{equation}
+    \nabla^2\phi\big|_{P}
+    \approx
+    \frac{\phi_E - 2\phi_P + \phi_W}{\Delta x^2}
+    +
+    \frac{\phi_N - 2\phi_P + \phi_S}{\Delta y^2}.
+    \label{eq:5ptcompass}
+\end{equation}
+The five-point stencil in terms of compass notation is depicted in Figure~\ref{fig:5ptstencil}. When $\Delta x = \Delta y = h$, \eqref{eq:5ptcompass} collapses to
+the form
+\begin{equation}
+    \nabla^2\phi\big|_{P}
+    \approx
+    \frac{\phi_E + \phi_W + \phi_N + \phi_S - 4\phi_P}{h^2}.
+    \label{eq:5ptiso}
+\end{equation}
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.6\textwidth, page=5]{FDM/images/1DFDMv6.pdf}
+    \caption{The five-point stencil \eqref{eq:5ptcompass} at an interior point
+    $P$, coupling $P$ to its north $(y)$, south $(y)$, east $(x)$, and west $(x)$ neighbors.}
+    \label{fig:5ptstencil}
+\end{figure}
+
+
+\section{Ordering the Unknowns}
+\label{sec:ordering}
+\index{array flattening}
+
+A linear solver in the form $Ax = b$ wants a vector of unknowns $x$, not the matrix $\Phi \in \mathbb{R}^{(N_x + 1) \times (N_y + 1)}$ of grid values we would obtain from evaluating $\phi$ over $\Omega$. We therefore \emph{flatten} $\Phi$ into a vector of size $\boldsymbol{\phi} \in\mathbb{R}^{M \times 1}$, where $M$ is the product of the number of unknowns in the $x$- and $y$-direction. The standard choice of flattening is row-wise, which sweeps a full row of $\Phi$ before moving to the next. Indexing this,
+\begin{equation}
+    \boldsymbol{\phi}_{k} = \Phi_{i,j},
+     \text{   where    } k (i,j) = i + j\,(N_x+1)
+    \label{eq:order}
+\end{equation}
+so consecutive entries of $\boldsymbol{\phi}$ sweep a row of $\Phi$ (fixed $y_j$, increasing $x_i$), and after
+$N_x+1$ entries we advance to the next row (the next $y_j$). The total number
+of unknowns  is $M=(N_x+1)(N_y+1)$ for a Type~I grid and $M=(N_x)(N_y)$ for a Type~II grid.
+
+Using row-wise flattening, the five-point Laplacian has a \emph{block
+tridiagonal} structure: tridiagonal blocks (the $x$ coupling to $E/W$) along the main
+block diagonal, and identity-like blocks (the $y$ coupling to $N/S$) one block above
+and below. Let's consider what this looks like discretely - let $\Delta x = \Delta y = h$ on a $3\times3$ Type~I grid ($N_x=N_y=2$). Ordering the
+nine unknowns with \eqref{eq:order} and applying the five-point stencil
+\eqref{eq:5ptiso} at each node produces
+\begin{equation}
+    \frac{1}{h^2}
+    \begin{bmatrix}
+        -4 &  1 &  0 &  1 &  0 &  0 &  0 &  0 &  0 \\
+         1 & -4 &  1 &  0 &  1 &  0 &  0 &  0 &  0 \\
+         0 &  1 & -4 &  0 &  0 &  1 &  0 &  0 &  0 \\
+         1 &  0 &  0 & -4 &  1 &  0 &  1 &  0 &  0 \\
+         0 &  \textcolor{Mulberry}{1} &  0 &  \textcolor{ForestGreen}{1} & \textcolor{ForestGreen}{-4} &  \textcolor{ForestGreen}{1} &  0 &  \textcolor{ForestGreen}{1} &  0 \\
+         0 &  0 &  1 &  0 &  1 & -4 &  0 &  0 &  1 \\
+         0 &  0 &  0 &  1 &  0 &  0 & \textcolor{RedOrange}{-4} &  \textcolor{RedOrange}{1} & \textcolor{RedOrange}{0} \\
+         0 &  0 &  0 &  0 &  1 &  0 &  \textcolor{RedOrange}{1} & \textcolor{RedOrange}{-4} &  \textcolor{RedOrange}{1} \\
+         0 &  0 &  0 &  0 &  0 &  1 &  \textcolor{RedOrange}{0} &  \textcolor{RedOrange}{1} & \textcolor{RedOrange}{-4}
+    \end{bmatrix}
+    \begin{bmatrix}
+        \phi_{0,0} \\ \phi_{0,1} \\ \phi_{0,2} \\
+        \phi_{1,0} \\ \textcolor{Mulberry}{\phi_{1,1}} \\ \phi_{1,2}\\
+        \textcolor{RedOrange}{\phi_{2,0}} \\ \textcolor{RedOrange}{\phi_{2,1}} \\ \textcolor{RedOrange}{\phi_{2,2}}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        -2\sin(x_0)\sin(y_0) \\
+        -2\sin(x_0)\sin(y_1)\\
+        -2\sin(x_0)\sin(y_2) \\
+        -2\sin(x_1)\sin(y_0)\\
+        -2\sin(x_1)\sin(y_1) \\
+        -2\sin(x_1)\sin(y_2) \\
+        -2\sin(x_2)\sin(y_0) \\
+        -2\sin(x_2)\sin(y_1) \\
+        -2\sin(x_2)\sin(y_2)
+    \end{bmatrix}.
+    \label{eq:2Dexpanded}
+\end{equation}
+We have highlighted the five-point stencil application at $P = x_{1,1}$ in purple and the tridiagonal block in orange. Along each row, the $x$ coupling contributes the super- and subdiagonal
+$+1$ bands, but those bands break at the boundaries of the domain. For example, node
+$(0,2)$ and node $(1,0)$ are consecutive in the flattened ordering yet are not spatial
+neighbors, so the $x$-coupling between them is zero and the band structure breaks. The $y$ coupling
+appears as $\pm1$ bands set $N_x+1$ columns out from the diagonal. Grouping
+the unknowns row by row exposes this as a \emph{block tridiagonal} matrix,
+\begin{equation}
+    L = \frac{1}{h^2}
+    \begin{bmatrix}
+        T & I & 0 & \cdots & 0 \\
+        I & T & I & \ddots & \vdots \\
+        0 & \ddots & \ddots & \ddots & 0 \\
+        \vdots & \ddots & I & T & I \\
+        0 & \cdots & 0 & I & T
+    \end{bmatrix},
+    \qquad
+    T =
+    \begin{bmatrix}
+        -4 & 1 & 0 & \cdots & 0 \\
+         1 & -4 & 1 & \ddots & \vdots \\
+         0 & \ddots & \ddots & \ddots & 0 \\
+         \vdots & \ddots & 1 & -4 & 1 \\
+         0 & \cdots & 0 & 1 & -4
+    \end{bmatrix},
+    \label{eq:2Dblock}
+\end{equation}
+where $I$ is the $(N_y+1)\times(N_y+1)$ identity and $T$ is the tridiagonal block highlighted in orange in \eqref{eq:2Dexpanded}, shown for the final block row $i=N_x=2$. We will define this further in the next section. Note the boundary
+rows here still show the raw stencil; their treatment is deferred to
+Section~\ref{sec:2Dbcs}.
+
+
+
+%\begin{figure}[htbp]
+ %   \centering
+%\includegraphics[width=\textwidth, page=12]{FDM/images/1DFDMv6.pdf}
+%\caption{Structure of $N \times 5$ matrix with 2D Laplacian structure for first three rows, with exterior points in orange and interior points in cyan. The every-other gray shading represents the respective rows. }
+%    \label{fig:ordering}
+%\end{figure}
+
+
+\section{Assembling Operators with Kronecker Products}
+\label{sec:kron}
+\index{Kronecker product}
+
+The block structure just described is the
+signature of a \emph{Kronecker product}, which gives us a straightfoward way to build the 2D
+operator directly from the 1D matrices of Chapter~\ref{chpt:FDM}, without ever
+looping over individual stencils. Note however that both approaches are equivalent. We will discuss the Kronecker implementation and leave the stencil looping as an exercise.
+
+\clearpage 
+
+\begin{definition}[Kronecker product]
+For $A\in\mathbb{R}^{m\times m}$ and $B\in\mathbb{R}^{n\times n}$, the
+Kronecker product $A\otimes B\in\mathbb{R}^{mn\times mn}$ is the block matrix
+obtained by multiplying each entry $a_{ij}$ of $A$ by the whole matrix $B$, such that
+\[
+    A\otimes B =
+    \begin{bmatrix}
+        a_{11}B & a_{12}B & \cdots & a_{1m}B\\
+        a_{21}B & a_{22}B & \cdots & a_{2m}B\\
+        \vdots  & \vdots  & \ddots & \vdots \\
+        a_{m1}B & a_{m2}B & \cdots & a_{mm}B
+    \end{bmatrix}.
+\]
+\end{definition}
+
+Let $D_x\in\mathbb{R}^{(N_x+1)\times(N_x+1)}$ and
+$D_y\in\mathbb{R}^{(N_y+1)\times(N_y+1)}$ be the 1D second-difference matrices
+in the $x$ and $y$ directions, i.e. the
+tridiagonal $[\,1,\,-2,\,1\,]$ operators scaled by $1/\Delta x^2$ and
+$1/\Delta y^2$ respectively. Writing the grid values as a matrix
+$\Phi$ with entries $\Phi_{ij}=\phi_{i,j}$, the five-point Laplacian
+\eqref{eq:5pt} is exactly
+\[
+    \nabla^2\phi \;\approx\; D_x\,\Phi + \Phi\,D_y^{\mathsf T}.
+\]
+Flattening $\Phi$ into $\boldsymbol{\phi}$ row-wise as shown in
+\eqref{eq:order}, we can evaluate the Laplacian discretely through the matrix
+\begin{equation}
+    L \;=\; I_y\otimes D_x \;+\; D_y\otimes I_x
+    \label{eq:2Dlaplacian-kron}
+\end{equation}
+where $I_x$ and $I_y$ are identity matrices of size $N_x+1$ and $N_y+1$, respectively, and $L$ follows the same structure shown in \eqref{eq:2Dexpanded}. The
+discrete Poisson problem is then simply
+\begin{equation}
+    L\,\boldsymbol{\phi} = \boldsymbol{f},
+    \label{eq:2Dsystem}
+\end{equation}
+with $\boldsymbol{f}$ the forcing \eqref{eq:2Dforcing} flattened in the same
+order.
+
+
+
+\section{Type I and Type II Grids in Two Dimensions}
+\label{sec:2Dgridtypes}
+
+The two grid layouts of Chapter~\ref{chpt:FDM} extend to two dimensions by
+taking the corresponding 1D layout in \emph{each} direction.
+
+\index{grid!Type I}\index{nodal grid}
+Recall a \textbf{Type~I} (nodal) grid is discretized as 
+\begin{equation}
+    x_i = a + i\,\Delta x,\quad i=0,\dots,N_x,
+    \qquad
+    y_j = c + j\,\Delta y,\quad j=0,\dots,N_y,
+\end{equation}
+which places points on the boundary in both
+directions, as depicted in Figure~\ref{fig:2Dgrids}. The four edges $x=a, b$ and $y=c, d$ are exterior points of the grid, highlighted in orange, and the four corners are themselves nodes of our grid. The
+ghost points shown in grey are the rings of nodes one spacing outside the domain, e.g.
+$x_{-1}=a-\Delta x$ along the west edge and $y_{-1}=c-\Delta y$ along the
+south edge. All interior points are shown in cyan.
+
+\index{grid!Type II}\index{cell-centered grid}
+Recall a \textbf{Type~II} (cell-centered) grid instead discretizes $\Omega$ with
+$N_x\times N_y$ rectangular cells of size $\Delta x\times\Delta y$ and places
+the unknowns at the cell centers. Extending this idea to two-dimension gives
+\begin{equation}
+    x_{i+1/2}=a+\left(i+\tfrac12\right)\Delta x,
+    \qquad
+    y_{j+1/2}=c+\left(j+\tfrac12\right)\Delta y,
+\end{equation}
+for $i=0,\dots,N_x-1$ and $j=0,\dots,N_y-1$. No unknown lies on the domain boundary and 
+each edge is a line of cell faces. The ghost values live half a
+spacing outside the domain. Figure~\ref{fig:2Dgrids} depicts a Type~II grid, with exterior points in orange, interior points in cyan, and ghost points in grey.
+
+\begin{figure}[htbp]
+    \centering
+\includegraphics[width=0.4\textwidth, page=6]{FDM/images/1DFDMv6.pdf} \hspace{1cm}
+\includegraphics[width=0.4\textwidth, page=11]{FDM/images/1DFDMv6.pdf}
+\caption{On the left, a Type I grid for $\Omega$, with interior points highlighted in cyan, exterior points in orange, and ghost values in grey. On the right, a Type II grid for $\Omega$ with the same shading convention.}
+    \label{fig:2Dgrids}
+\end{figure}
+
+
+\section{Boundary Conditions in Two Dimensions}
+\label{sec:2Dbcs}
+
+Everything from the 1D discussion carries over to 2D for the three boundary conditions of interest, which we will now impose on
+\eqref{eq:2Dpoisson}. In each case we treat the west
+edge $x=a$ in detail. The
+remaining edges follow by relabelling and are left as exercises. A new focus for 2D is defining boundary conditions on the corners
+where two edges meet, which we will treat separately in Section~\ref{sec:2Dcorners}.
+
+
+\subsection{Dirichlet Conditions}
+\label{sec:2Ddirichlet}
+\index{Dirichlet boundary condition}
+
+Recall that a Dirichlet condition prescribes the \emph{value} of $\phi$ on the boundary.
+Along the west edge, $\phi(a,y_j)=\equiv\alpha_j$, such that $\phi$ evaluates as the constant $\alpha_j$ for all $j$ along the west edge ($x = a$).
+\paragraph{Type~I.}
+The west-edge nodes $(0,j)$ lie exactly on the boundary, so the condition is simply $\phi_{0,j}=\alpha_j$. As in one dimension there are two
+equivalent implementations. We may overwrite the boundary row so that it reads
+$\phi_{0,j}=\alpha_j$ (a $1$ on the diagonal, right-hand side $\alpha_j$), or
+we may treat $\phi_{0,j}$ as known and eliminate it for our left-hand side, moving its
+contributions to its neighbors to the right-hand side. For the interior node
+$(1,j)$ adjacent to the west edge, the elimination gives (with
+$\Delta x=\Delta y=h$)
+\begin{equation}
+    \nabla^2\phi\big|_{1,j}
+\approx 
+    \frac{\phi_{2,j}-2\phi_{1,j}}{h^2}+\frac{\phi_{1,j+1}-2\phi_{1,j}+\phi_{1,j-1}}{h^2}
+    \;=\; f_{1,j}-\frac{\alpha_j}{h^2}.
+    \label{eq:2Ddir-typeI}
+\end{equation}
+
+
+If we were to impose Dirichlet conditions for all edges, consider what happens at the node
+$(1,1)$. (See
+Section~\ref{sec:2Dcorners}.)
+
+\paragraph{Type~II.}
+There is no node on the boundary, so the boundary condition is enforced through a midpoint formula.
+The west face at $x=a$ is the midpoint of the ghost point $x_{-1/2}$ and the
+exterior point $x_{1/2}$, so
+\begin{equation}
+    \alpha_j = \frac{\phi_{-1/2,\,j}+\phi_{1/2,\,j}}{2}
+    \quad\Longrightarrow\quad
+    \phi_{-1/2,\,j} = 2\alpha_j - \phi_{1/2,\,j}.
+    \label{eq:2Ddir-typeII-ghost}
+\end{equation}
+Substituting \eqref{eq:2Ddir-typeII-ghost} into the five-point stencil at
+$(1/2,j)$ turns the west coupling into
+\begin{equation}
+    \frac{-3\,\phi_{1/2,\,j}+\phi_{3/2,\,j}}{\Delta x^2}
+    + (\text{$y$ terms})
+    = f_{1/2,\,j}-\frac{2\alpha_j}{\Delta x^2},
+    \label{eq:2Ddir-typeII}
+\end{equation}
+exactly the $-3$ boundary coefficient found in \eqref{dirTypeII}. To apply this along the whole west edge, we simply implement for every $j$.
+
+\subsection{Neumann Conditions}
+\label{sec:2Dneumann}
+\index{Neumann boundary condition}
+
+Recall a Neumann condition prescribes the outward normal derivative. On the west edge
+$\hat n=-\hat x$, so the condition
+$\partial\phi/\partial n\,(a,y_j)= \alpha_j$ implies that
+$\partial_x\phi(a,y_j)=-\alpha_j$.
+
+\begin{remark}
+The normal direction for each boundary differs and should be considered when defining any boundary condition.
+\end{remark}
+
+\paragraph{Type~I.}
+The boundary is the line of nodes $x_0=a$, so we apply the central difference first derivative \eqref{eq:fdCentral} in $x$:
+\begin{equation}
+    \frac{\phi_{1,j}-\phi_{-1,j}}{2\Delta x} = -\alpha_j
+    \quad\Longrightarrow\quad
+    \phi_{-1,j} = \phi_{1,j} + 2\Delta x\,\alpha_j.
+    \label{eq:2Dneu-typeI-ghost}
+\end{equation}
+Substituting into the five-point stencil at $(0,j)$  and moving the constant to the right-hand side,
+\begin{equation}
+    \frac{2\phi_{1,j}-2\phi_{0,j}}{\Delta x^2}
+    + (\text{$y$ terms})
+    = f_{0,j} - \frac{2\alpha_j}{\Delta x}.
+    \label{eq:2Dneu-typeI}
+\end{equation}
+Compare the $x$ part, $[\,-2,\ 2\,]/\Delta x^2$, with the 1D result
+\eqref{neuTypeI}. The discretizations for $x$ are identical, but in 2D this is now enforced across the entire west edge.
+
+\paragraph{Type~II.}
+The derivative is specified at the west face, which lies exactly halfway
+between the ghost center $x_{-1/2}$ and the interior center $x_{1/2}$. As in
+Section~\ref{sec:bc-neumann}, a one-sided difference across that face is
+second-order accurate at the domain boundary, such that
+\begin{equation}
+    \frac{\phi_{1/2,\,j}-\phi_{-1/2,\,j}}{\Delta x} = -\alpha_j
+    \quad\Longrightarrow\quad
+    \phi_{-1/2,\,j} = \phi_{1/2,\,j} + \Delta x\,\alpha_j.
+    \label{eq:2Dneu-typeII-ghost}
+\end{equation}
+Substituting into the five-point stencil at $(1/2,j)$ gives the west-edge row
+\begin{equation}
+    \frac{\phi_{3/2,\,j}-\phi_{1/2,\,j}}{\Delta x^2}
+    + (\text{$y$ terms})
+    = f_{1/2,\,j} - \frac{\alpha_j}{\Delta x},
+    \label{eq:2Dneu-typeII}
+\end{equation}
+matching the $[\,-1,\ 1\,]/\Delta x^2$ boundary row of \eqref{neuTypeII}. Again, this can be applied across the entire edge.
+
+
+
+\subsection{Periodic Conditions}
+\label{sec:2Dperiodic}
+\index{periodic boundary condition}
+
+Recall a periodic condition in $x$ states that $\phi$ and its
+$x$-derivatives at $x=a$ equal those at $x=b$. As in Section~\ref{sec:bc-periodic},
+this is implemented by wrapping the ghost value around to the opposite end of the domain and cutting off the last point of the domain.
+
+\paragraph{Type~I.}
+The nodes $x_0=a$ and $x_{N_x}=b$ represent the same physical location, so we
+carry the $N_x$ distinct unknowns $\phi_{0,j},\dots,\phi_{N_x-1,j}$ in each
+row and drop $\phi_{N_x,j}\equiv\phi_{0,j}$. Stepping west past the first node
+wraps to the last interior node,
+\begin{equation}
+    \phi_{-1,\,j}\equiv\phi_{N_x-1,\,j}.
+    \label{eq:2Dper-typeI}
+\end{equation}
+
+
+\paragraph{Type~II.}
+The cells wrap just the same as a Type~I grid, such that the west ghost cell is a copy of the last interior
+cell in the row,
+\begin{equation}
+    \phi_{-1/2,\,j}\equiv\phi_{N_x-1/2,\,j}.
+\end{equation}
+ 
+
+
+
+\subsection{Managing Corners}
+\label{sec:2Dcorners}
+
+Consider the top-left corner on a Type~I grid, node $(0,0)$. Its five-point
+stencil calls for a west ghost $\phi_{-1,0}$ \emph{and} a north ghost
+$\phi_{0,-1}$.
+
+This highlights the beauty of the Kronecker build. The west/east conditions are enforced
+once in the boundary rows of $D_x$, and the term $D_x\otimes I_y$ places it into
+every $x$-block, including the block containing the corner. The south/north
+conditions are enforced in $D_y$, and the term $I_x\otimes D_y$ places it within
+every block, including the corner's. The corner node therefore receives both
+modifications automatically, with no special code.
+
+To see that this produces the right coefficients, take homogeneous Neumann on
+the west and north edges with $\Delta x=\Delta y=h$. The 1D factors have
+boundary rows $[\,-2,\ 2\,]/h^2$ (from \eqref{eq:2Dneu-typeI}), and
+\eqref{eq:2Dlaplacian-kron} gives the corner row
+\begin{equation}
+    \nabla^2\phi\big|_{0,0}
+    \;\approx\;
+    \frac{-4\phi_{0,0}+2\phi_{1,0}+2\phi_{0,1}}{h^2},
+    \label{eq:2Dcorner}
+\end{equation}
+i.e. diagonal $-4/h^2$ with weight $2/h^2$ to the east and to the north. It is
+a worthwhile check to rederive \eqref{eq:2Dcorner} by hand, substituting the
+two ghost relations directly into the stencil, and confirm that the Kronecker
+construction agrees. The right-hand side is where care is needed: at a corner
+the constants output by the respective difference methods from \emph{both} edges land on the same equation.
+
+
+\section{Assembling the Discrete System}
+\label{sec:2Dassembly}
+
+You are now equipped to assemble \eqref{eq:2Dsystem} for any combination of the
+three boundary conditions on either grid type. The recipe is:
+\begin{enumerate}
+    \item Build the 1D factors $D_x$ and $D_y$ as in Chapter~\ref{chpt:FDM}.
+    \item Modify the \emph{boundary rows} of each factor to encode that
+    direction's boundary condition (identity/$-3$ for Dirichlet, $[-2,2]$ or
+    $[-1,1]$ for Neumann, circulant for periodic), matching the grid type.
+    \item Form $L$ from $D_{x}, D_{y}, I_y,$ and $I_x$.
+    \item Flatten the forcing $f$ with the same ordering \eqref{eq:order}, and
+    add the boundary-data contributions (including the doubled corner terms) to
+    the appropriate entries of $\boldsymbol f$.
+    \item Solve $L\boldsymbol\phi=\boldsymbol f$.
+    \item Reshape
+    $\boldsymbol\phi$ back to the grid.
+\end{enumerate}
+
+
+\section{Basic Numerical Implementation}
+\label{sec:2Dcode}
+
+Below we assemble the five-point Laplacian by Kronecker product in MATLAB and
+python. As in Chapter~\ref{chpt:FDM}, \emph{the matrices are shown without
+boundary conditions} --- imposing them is left as an exercise. Note that both
+listings use the identical formula \verb|kron(Ix, Dy) + kron(Dx, Iy)|; only
+the array-flattening convention differs between the two languages, and each
+listing comments its own convention.
+
+\subsection{MATLAB}
+\begin{lstlisting}[language=matlab]
+
+
+a = 0;  b = 2*pi;          % x-domain
+c = 0;  d = 2*pi;          % y-domain
+Nx = 40;  Ny = 40;         % number of intervals in x and y
+dx = (b - a) / Nx;
+dy = (d - c) / Ny;
+
+x = (a:dx:b).';            % Nx+1 nodes (Type I)
+y = (c:dy:d).';            % Ny+1 nodes
+nx = Nx + 1;  ny = Ny + 1;
+
+% wnat ordering k = i + j*nx.
+[X, Y] = meshgrid(x, y);   % size (ny x nx)
+X = X.';  Y = Y.';         % -> (nx x ny) now row-wise flattened
+
+% 1D second-difference factors (NO boundary conditions yet)
+ex = ones(nx, 1);
+Dx = spdiags([ex, -2*ex, ex], [-1 0 1], nx, nx) / dx^2;
+ey = ones(ny, 1);
+Dy = spdiags([ey, -2*ey, ey], [-1 0 1], ny, ny) / dy^2;
+
+% 2D Laplacian:  L = I_y (x) Dx + Dy (x) I_x   (x-fast ordering)
+Ix = speye(nx);  Iy = speye(ny);
+L = kron(Iy, Dx) + kron(Dy, Ix);
+
+% right-hand side (manufactured solution phi = sin(x)sin(y))
+F = -2 * sin(X) .* sin(Y);     % (nx x ny)
+f = F(:);                      	% flattens array F row-wise
+
+%%%
+% IMPLEMENT BOUNDARY CONDITIONS HERE, on L and f.
+% Recommended: modify the boundary rows of Dx and Dy BEFORE the kron,
+% then rebuild L; add the constant contributions from BC to f, remembering that
+% at a corner the two edge contributions add.
+%%%
+
+phi = L \ f;                   % solve
+Phi = reshape(phi, nx, ny);    % back to a grid: Phi(i,j) ~ phi(x_i, y_j)
+\end{lstlisting}
+
+\subsection{python}
+\begin{lstlisting}[language=python]
+import numpy as np
+import scipy.sparse as sp
+import scipy.sparse.linalg as spla
+
+\begin{lstlisting}[language=python]
+import numpy as np
+import scipy.sparse as sp
+import scipy.sparse.linalg as spla
+
+
+a, b = 0.0, 2*np.pi        # x-domain
+c, d = 0.0, 2*np.pi        # y-domain
+Nx, Ny = 40, 40            # number of intervals in x and y
+dx = (b - a) / Nx
+dy = (d - c) / Ny
+
+x = np.linspace(a, b, Nx + 1)   # Type I nodes
+y = np.linspace(c, d, Ny + 1)
+nx, ny = Nx + 1, Ny + 1
+
+# ordering k = i + j*nx.
+X, Y = np.meshgrid(x, y)
+
+# 1D second-difference factors (NO boundary conditions yet)
+Dx = sp.diags([1, -2, 1], [-1, 0, 1], shape=(nx, nx)) / dx**2
+Dy = sp.diags([1, -2, 1], [-1, 0, 1], shape=(ny, ny)) / dy**2
+
+# 2D Laplacian:  L = I_y (x) Dx + Dy (x) I_x   
+Ix = sp.eye(nx)
+Iy = sp.eye(ny)
+L = sp.kron(Iy, Dx) + sp.kron(Dy, Ix)
+
+# right-hand side (manufactured solution phi = sin(x)sin(y))
+F = -2 * np.sin(X) * np.sin(Y)  
+f = F.flatten()                  
+
+###
+# IMPLEMENT BOUNDARY CONDITIONS HERE, on L and f.
+# Recommended: modify the boundary rows of Dx and Dy BEFORE the kron,
+# then rebuild L;  add the constant contributions from BC to f, remembering that
+# at a corner the two edge contributions add. Convert to CSR to solve.
+###
+
+phi = spla.spsolve(L.tocsr(), f)
+Phi = phi.reshape(ny, nx)  # back to a grid: Phi[j,i] ~ phi(x_i, y_j)
+\end{lstlisting}
+
+
+\begin{remark}
+As assembled above, the top and bottom rows of $D_x$ and $D_y$ are
+\emph{invalid} stencils --- they reference neighbors that do not exist --- so
+$L$ is not yet solvable in a meaningful way. This is the two-dimensional echo
+of the ``more unknowns than equations'' situation from
+Section~\ref{sec:bvp-example}: the boundary rows are placeholders waiting for
+you to impose a boundary condition.
+\end{remark}
 
 
 
