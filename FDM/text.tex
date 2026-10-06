@@ -1220,96 +1220,11 @@ the array-flattening convention differs between the two languages, and each
 listing comments its own convention.
 
 \subsection{MATLAB}
-\begin{lstlisting}[language=matlab]
-
-
-a = 0;  b = 2*pi;          % x-domain
-c = 0;  d = 2*pi;          % y-domain
-Nx = 40;  Ny = 40;         % number of intervals in x and y
-dx = (b - a) / Nx;
-dy = (d - c) / Ny;
-
-x = (a:dx:b).';            % Nx+1 nodes (Type I)
-y = (c:dy:d).';            % Ny+1 nodes
-nx = Nx + 1;  ny = Ny + 1;
-
-% wnat ordering k = i + j*nx.
-[X, Y] = meshgrid(x, y);   % size (ny x nx)
-X = X.';  Y = Y.';         % -> (nx x ny) now row-wise flattened
-
-% 1D second-difference factors (NO boundary conditions yet)
-ex = ones(nx, 1);
-Dx = spdiags([ex, -2*ex, ex], [-1 0 1], nx, nx) / dx^2;
-ey = ones(ny, 1);
-Dy = spdiags([ey, -2*ey, ey], [-1 0 1], ny, ny) / dy^2;
-
-% 2D Laplacian:  L = I_y (x) Dx + Dy (x) I_x   (x-fast ordering)
-Ix = speye(nx);  Iy = speye(ny);
-L = kron(Iy, Dx) + kron(Dy, Ix);
-
-% right-hand side (manufactured solution phi = sin(x)sin(y))
-F = -2 * sin(X) .* sin(Y);     % (nx x ny)
-f = F(:);                      	% flattens array F row-wise
-
-%%%
-% IMPLEMENT BOUNDARY CONDITIONS HERE, on L and f.
-% Recommended: modify the boundary rows of Dx and Dy BEFORE the kron,
-% then rebuild L; add the constant contributions from BC to f, remembering that
-% at a corner the two edge contributions add.
-%%%
-
-phi = L \ f;                   % solve
-Phi = reshape(phi, nx, ny);    % back to a grid: Phi(i,j) ~ phi(x_i, y_j)
-\end{lstlisting}
+\lstinputlisting[language=python]{FDM/code/laplacian_2d_assembly.py}
 
 \subsection{python}
-\begin{lstlisting}[language=python]
-import numpy as np
-import scipy.sparse as sp
-import scipy.sparse.linalg as spla
 
-\begin{lstlisting}[language=python]
-import numpy as np
-import scipy.sparse as sp
-import scipy.sparse.linalg as spla
-
-
-a, b = 0.0, 2*np.pi        # x-domain
-c, d = 0.0, 2*np.pi        # y-domain
-Nx, Ny = 40, 40            # number of intervals in x and y
-dx = (b - a) / Nx
-dy = (d - c) / Ny
-
-x = np.linspace(a, b, Nx + 1)   # Type I nodes
-y = np.linspace(c, d, Ny + 1)
-nx, ny = Nx + 1, Ny + 1
-
-# ordering k = i + j*nx.
-X, Y = np.meshgrid(x, y)
-
-# 1D second-difference factors (NO boundary conditions yet)
-Dx = sp.diags([1, -2, 1], [-1, 0, 1], shape=(nx, nx)) / dx**2
-Dy = sp.diags([1, -2, 1], [-1, 0, 1], shape=(ny, ny)) / dy**2
-
-# 2D Laplacian:  L = I_y (x) Dx + Dy (x) I_x   
-Ix = sp.eye(nx)
-Iy = sp.eye(ny)
-L = sp.kron(Iy, Dx) + sp.kron(Dy, Ix)
-
-# right-hand side (manufactured solution phi = sin(x)sin(y))
-F = -2 * np.sin(X) * np.sin(Y)  
-f = F.flatten()                  
-
-###
-# IMPLEMENT BOUNDARY CONDITIONS HERE, on L and f.
-# Recommended: modify the boundary rows of Dx and Dy BEFORE the kron,
-# then rebuild L;  add the constant contributions from BC to f, remembering that
-# at a corner the two edge contributions add. Convert to CSR to solve.
-###
-
-phi = spla.spsolve(L.tocsr(), f)
-Phi = phi.reshape(ny, nx)  # back to a grid: Phi[j,i] ~ phi(x_i, y_j)
-\end{lstlisting}
+\lstinputlisting[language=python]{FDM/code/laplacian_2d_assembly.py}
 
 
 \begin{remark}
