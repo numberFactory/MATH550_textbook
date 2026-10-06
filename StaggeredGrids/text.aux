@@ -1,0 +1,238 @@
+\relax 
+\providecommand\zref@newlabel[2]{}
+\providecommand\hyper@newdestlabel[2]{}
+\@writefile{toc}{\contentsline {chapter}{\numberline {5}Staggered Grids}{46}{chapter.5}\protected@file@percent }
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\@writefile{lof}{\contentsline {xchapter}{Staggered Grids}{46}{chapter.5}\protected@file@percent }
+\@writefile{lot}{\contentsline {xchapter}{Staggered Grids}{46}{chapter.5}\protected@file@percent }
+\newlabel{chpt:staggered}{{5}{46}{Staggered Grids}{chapter.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.1}Coupled Unknowns on a Single Grid}{46}{section.5.1}\protected@file@percent }
+\newlabel{sec:collocated}{{5.1}{46}{Coupled Unknowns on a Single Grid}{section.5.1}{}}
+\newlabel{eq:stg-colGrad}{{5.1}{46}{Coupled Unknowns on a Single Grid}{equation.5.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.2}Staggering in One Dimension}{47}{section.5.2}\protected@file@percent }
+\newlabel{sec:stg1D}{{5.2}{47}{Staggering in One Dimension}{section.5.2}{}}
+\newlabel{eq:stg-grad1D}{{5.2}{47}{Staggering in One Dimension}{equation.5.2}{}}
+\newlabel{eq:stg-div1D}{{5.3}{47}{Staggering in One Dimension}{equation.5.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.1}{\ignorespaces A one-dimensional staggered grid. Pressure $p$ lives at cell centers (Type~II, stars) and velocity $u$ lives at cell faces (Type~I, circles). Cell centers are labelled with uppercase compass letters and faces with lowercase letters.}}{47}{figure.caption.38}\protected@file@percent }
+\newlabel{fig:stg-1D}{{5.1}{47}{A one-dimensional staggered grid. Pressure $p$ lives at cell centers (Type~II, stars) and velocity $u$ lives at cell faces (Type~I, circles). Cell centers are labelled with uppercase compass letters and faces with lowercase letters}{figure.caption.38}{}}
+\zref@newlabel{mdf@pagelabel-5}{\default{5.2}\page{48}\abspage{48}\mdf@pagevalue{48}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.3}The Marker-and-Cell Grid}{48}{section.5.3}\protected@file@percent }
+\newlabel{sec:mac}{{5.3}{48}{The Marker-and-Cell Grid}{section.5.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5.1}{\ignorespaces Placement of unknowns on the MAC grid, described by the grid type each unknown sees in each coordinate direction.}}{48}{table.caption.39}\protected@file@percent }
+\newlabel{tab:stg-mac}{{5.1}{48}{Placement of unknowns on the MAC grid, described by the grid type each unknown sees in each coordinate direction}{table.caption.39}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.2}{\ignorespaces Depiction of MAC staggered grid in two-dimensions for $N_x = N_y = 4$. Pressure lives at the cell center (circles), horizontal velocity $u$ on the east and west faces (squares), and vertical velocity $v$ on the north and south faces (triangles). Ghost cells are shown for the velocity components only.}}{49}{figure.caption.40}\protected@file@percent }
+\newlabel{fig:stg-macCell}{{5.2}{49}{Depiction of MAC staggered grid in two-dimensions for $N_x = N_y = 4$. Pressure lives at the cell center (circles), horizontal velocity $u$ on the east and west faces (squares), and vertical velocity $v$ on the north and south faces (triangles). Ghost cells are shown for the velocity components only}{figure.caption.40}{}}
+\newlabel{eq:stg-div2D}{{5.4}{50}{The Marker-and-Cell Grid}{equation.5.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.1}Ordering Unknowns}{50}{subsection.5.3.1}\protected@file@percent }
+\newlabel{sec:stg-order}{{5.3.1}{50}{Ordering Unknowns}{subsection.5.3.1}{}}
+\newlabel{eq:stg-order}{{5.5}{50}{Ordering Unknowns}{equation.5.5}{}}
+\newlabel{eq:unknowns}{{5.6}{50}{Ordering Unknowns}{equation.5.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.2}Building Two-Dimensional Operators}{50}{subsection.5.3.2}\protected@file@percent }
+\newlabel{sec:stg-kron}{{5.3.2}{50}{Building Two-Dimensional Operators}{subsection.5.3.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.4}The Stokes Equations}{51}{section.5.4}\protected@file@percent }
+\newlabel{sec:stokes}{{5.4}{51}{The Stokes Equations}{section.5.4}{}}
+\newlabel{eq:stg-stokesMom}{{5.7}{51}{The Stokes Equations}{equation.5.7}{}}
+\newlabel{eq:stg-stokesCont}{{5.8}{51}{The Stokes Equations}{equation.5.8}{}}
+\newlabel{eq:stg-xmom}{{5.9}{51}{The Stokes Equations}{equation.5.9}{}}
+\newlabel{eq:stg-ymom}{{5.10}{51}{The Stokes Equations}{equation.5.10}{}}
+\newlabel{eq:stg-cont}{{5.11}{51}{The Stokes Equations}{equation.5.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4.1}Where Each Equation Lives}{51}{subsection.5.4.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5.2}{\ignorespaces Number of grid locations for each unknown on an $N_x\times N_y$ MAC grid, before boundary conditions are applied.}}{52}{table.caption.41}\protected@file@percent }
+\newlabel{tab:stg-counts}{{5.2}{52}{Number of grid locations for each unknown on an $N_x\times N_y$ MAC grid, before boundary conditions are applied}{table.caption.41}{}}
+\newlabel{eq:stg-block}{{5.12}{52}{Where Each Equation Lives}{equation.5.12}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4.2}Building Each Operator}{52}{subsection.5.4.2}\protected@file@percent }
+\newlabel{sec:stg-ops}{{5.4.2}{52}{Building Each Operator}{subsection.5.4.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4.3}Post-Processing}{52}{subsection.5.4.3}\protected@file@percent }
+\newlabel{sec:stg-post}{{5.4.3}{52}{Post-Processing}{subsection.5.4.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4.4}Numerical Implementation in python}{53}{subsection.5.4.4}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{StaggeredGrids/code/stokes\textunderscore mac\textunderscore base.py}{53}{lstlisting.5.-9}\protected@file@percent }
+\@setckpt{StaggeredGrids/text}{
+\setcounter{page}{55}
+\setcounter{equation}{12}
+\setcounter{enumi}{2}
+\setcounter{enumii}{0}
+\setcounter{enumiii}{0}
+\setcounter{enumiv}{0}
+\setcounter{footnote}{0}
+\setcounter{mpfootnote}{0}
+\setcounter{part}{0}
+\setcounter{chapter}{5}
+\setcounter{section}{4}
+\setcounter{subsection}{4}
+\setcounter{subsubsection}{0}
+\setcounter{paragraph}{0}
+\setcounter{subparagraph}{0}
+\setcounter{figure}{2}
+\setcounter{table}{2}
+\setcounter{parentequation}{0}
+\setcounter{caption@flags}{2}
+\setcounter{continuedfloat}{0}
+\setcounter{mtc}{5}
+\setcounter{minitocdepth}{1}
+\setcounter{ptc}{0}
+\setcounter{parttocdepth}{2}
+\setcounter{section@level}{2}
+\setcounter{Item}{12}
+\setcounter{Hfootnote}{1}
+\setcounter{bookmark@seq@number}{25}
+\setcounter{envdefinition}{0}
+\setcounter{envtheorem}{0}
+\setcounter{envlemma}{0}
+\setcounter{envexercise}{3}
+\setcounter{envproblem}{0}
+\setcounter{envprogramming}{0}
+\setcounter{envexample}{0}
+\setcounter{probcounter}{1}
+\setcounter{tabx@nest}{0}
+\setcounter{listtotal}{0}
+\setcounter{listcount}{0}
+\setcounter{liststart}{0}
+\setcounter{liststop}{0}
+\setcounter{citecount}{0}
+\setcounter{citetotal}{0}
+\setcounter{multicitecount}{0}
+\setcounter{multicitetotal}{0}
+\setcounter{instcount}{16}
+\setcounter{maxnames}{3}
+\setcounter{minnames}{1}
+\setcounter{maxitems}{3}
+\setcounter{minitems}{1}
+\setcounter{citecounter}{0}
+\setcounter{maxcitecounter}{0}
+\setcounter{savedcitecounter}{0}
+\setcounter{uniquelist}{0}
+\setcounter{uniquename}{0}
+\setcounter{refsection}{0}
+\setcounter{refsegment}{0}
+\setcounter{maxextratitle}{0}
+\setcounter{maxextratitleyear}{0}
+\setcounter{maxextraname}{2}
+\setcounter{maxextradate}{0}
+\setcounter{maxextraalpha}{0}
+\setcounter{abbrvpenalty}{50}
+\setcounter{highnamepenalty}{50}
+\setcounter{lownamepenalty}{25}
+\setcounter{maxparens}{3}
+\setcounter{parenlevel}{0}
+\setcounter{blx@maxsection}{0}
+\setcounter{mincomprange}{10}
+\setcounter{maxcomprange}{100000}
+\setcounter{mincompwidth}{1}
+\setcounter{afterword}{0}
+\setcounter{savedafterword}{0}
+\setcounter{annotator}{0}
+\setcounter{savedannotator}{0}
+\setcounter{author}{0}
+\setcounter{savedauthor}{0}
+\setcounter{bookauthor}{0}
+\setcounter{savedbookauthor}{0}
+\setcounter{commentator}{0}
+\setcounter{savedcommentator}{0}
+\setcounter{editor}{0}
+\setcounter{savededitor}{0}
+\setcounter{editora}{0}
+\setcounter{savededitora}{0}
+\setcounter{editorb}{0}
+\setcounter{savededitorb}{0}
+\setcounter{editorc}{0}
+\setcounter{savededitorc}{0}
+\setcounter{foreword}{0}
+\setcounter{savedforeword}{0}
+\setcounter{holder}{0}
+\setcounter{savedholder}{0}
+\setcounter{introduction}{0}
+\setcounter{savedintroduction}{0}
+\setcounter{namea}{0}
+\setcounter{savednamea}{0}
+\setcounter{nameb}{0}
+\setcounter{savednameb}{0}
+\setcounter{namec}{0}
+\setcounter{savednamec}{0}
+\setcounter{translator}{0}
+\setcounter{savedtranslator}{0}
+\setcounter{shortauthor}{0}
+\setcounter{savedshortauthor}{0}
+\setcounter{shorteditor}{0}
+\setcounter{savedshorteditor}{0}
+\setcounter{labelname}{0}
+\setcounter{savedlabelname}{0}
+\setcounter{institution}{0}
+\setcounter{savedinstitution}{0}
+\setcounter{lista}{0}
+\setcounter{savedlista}{0}
+\setcounter{listb}{0}
+\setcounter{savedlistb}{0}
+\setcounter{listc}{0}
+\setcounter{savedlistc}{0}
+\setcounter{listd}{0}
+\setcounter{savedlistd}{0}
+\setcounter{liste}{0}
+\setcounter{savedliste}{0}
+\setcounter{listf}{0}
+\setcounter{savedlistf}{0}
+\setcounter{location}{0}
+\setcounter{savedlocation}{0}
+\setcounter{organization}{0}
+\setcounter{savedorganization}{0}
+\setcounter{origlocation}{0}
+\setcounter{savedoriglocation}{0}
+\setcounter{origpublisher}{0}
+\setcounter{savedorigpublisher}{0}
+\setcounter{publisher}{0}
+\setcounter{savedpublisher}{0}
+\setcounter{language}{0}
+\setcounter{savedlanguage}{0}
+\setcounter{origlanguage}{0}
+\setcounter{savedoriglanguage}{0}
+\setcounter{pageref}{0}
+\setcounter{savedpageref}{0}
+\setcounter{textcitecount}{1}
+\setcounter{textcitetotal}{1}
+\setcounter{textcitemaxnames}{0}
+\setcounter{biburlbigbreakpenalty}{100}
+\setcounter{biburlbreakpenalty}{200}
+\setcounter{biburlnumpenalty}{0}
+\setcounter{biburlucpenalty}{0}
+\setcounter{biburllcpenalty}{0}
+\setcounter{smartand}{1}
+\setcounter{bbx:relatedcount}{0}
+\setcounter{bbx:relatedtotal}{0}
+\setcounter{float@type}{32}
+\setcounter{algorithm}{0}
+\setcounter{ALG@line}{0}
+\setcounter{ALG@rem}{0}
+\setcounter{ALG@nested}{0}
+\setcounter{ALG@Lnr}{2}
+\setcounter{ALG@blocknr}{10}
+\setcounter{ALG@storecount}{0}
+\setcounter{ALG@tmpcounter}{0}
+\setcounter{blindtext}{1}
+\setcounter{Blindtext}{5}
+\setcounter{blind@countparstart}{0}
+\setcounter{blindlist}{0}
+\setcounter{blindlistlevel}{0}
+\setcounter{blindlist@level}{0}
+\setcounter{blind@listcount}{0}
+\setcounter{blind@levelcount}{0}
+\setcounter{blind@randomcount}{0}
+\setcounter{blind@randommax}{0}
+\setcounter{blind@pangramcount}{0}
+\setcounter{blind@pangrammax}{0}
+\setcounter{tcbbreakpart}{1}
+\setcounter{tcblayer}{0}
+\setcounter{tcolorbox@number}{4}
+\setcounter{tcbrastercolumn}{1}
+\setcounter{tcbrasterrow}{1}
+\setcounter{tcbrasternum}{1}
+\setcounter{tcbraster}{0}
+\setcounter{lstnumber}{88}
+\setcounter{tcblisting}{0}
+\setcounter{mdf@globalstyle@cnt}{0}
+\setcounter{mdfcountframes}{0}
+\setcounter{mdf@env@i}{0}
+\setcounter{mdf@env@ii}{0}
+\setcounter{mdf@zref@counter}{5}
+\setcounter{remark}{5}
+\setcounter{lstlisting}{0}
+}
