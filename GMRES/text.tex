@@ -183,7 +183,7 @@ Section~\ref{sec:bc-neumann}?
 \subsection{Building a good basis: the Arnoldi process}
 \label{sec:arnoldi}
 
-In floating point arithmetic the vectors $A^{j}\mathbf{b}$ are a poor basis as they share common eigenvectors. Instead we
+In floating point arithmetic the vectors $A^{k}\mathbf{b}$ are a poor basis as they share common eigenvectors. Instead we
 build an \emph{orthonormal} basis $\mathbf{q}_1,\dots,\mathbf{q}_k$ for the
 same space one vector at a time by multiplying the newest basis vector by $A$, then
 orthogonalizing the result against all previous vectors with Gram--Schmidt. This
@@ -246,7 +246,7 @@ A few properties follow directly from \eqref{eq:gmres-min}:
   \item Since $\mathcal{K}_k \subseteq \mathcal{K}_{k+1}$, the residual norm
         $\norm{\mathbf{r}_k}_2$ never increases from one iteration to the next.
   \item In exact arithmetic GMRES finds the exact solution in at most $n$
-        steps. This is useless as a practical bound ($n = N^3$!) -- what matters
+        steps. This is useless as a practical bound ($n = N^3$) -- what matters
         is how fast the residual drops in the first few iterations.
   \item The residual can be written as $\mathbf{r}_k = p_k(A)\,\mathbf{r}_0$,
         where $p_k$ is the polynomial of degree $k$ with $p_k(0) = 1$ that
@@ -451,7 +451,7 @@ function y = Apply_Lap(u, dx, N)
                 u_S = 0.0;
                 u_T = 0.0;
                 u_B = 0.0;
-                u_C = u(i,j,k);
+                u_P = u(i,j,k);
                 if i > 1; u_W = u(i-1,j,k); end
                 if i < N; u_E = u(i+1,j,k); end
                 if j > 1; u_S = u(i,j-1,k); end
@@ -461,7 +461,7 @@ function y = Apply_Lap(u, dx, N)
                 y(i,j,k) = (1/(dx^2))*(u_W + u_E + ...
                                        u_S + u_N + ...
                                        u_T + u_B + ...
-                                       -6.0*u_C);
+                                       -6.0*u_P);
             end
         end
     end
@@ -546,5 +546,3 @@ u_mv, flag = spla.gmres(A, f.ravel(), rtol=tol, restart=500)
 print(f'matrix-free GMRES: flag {flag}, {time.perf_counter() - t:.2f} s, '
       f'relative error {rel_err(u_mv):.3e}')
 \end{lstlisting}
-
-
