@@ -3,8 +3,8 @@
 
 
 
-In Chapter~\ref{chpt:FDM} every problem ended with a linear system of the form
-$A\mathbf{u} = \mathbf{f}$ which we solved with a single call to
+In Chapter~\ref{chpt:FDM}, every problem ended with a linear system of the form
+$A\mathbf{u} = \mathbf{f}$, which we solved with a single call to
 \texttt{A\textbackslash f} or \texttt{spsolve}. In one dimension this is
 perfectly reasonable: the matrix is tridiagonal and a direct solver handles it
 in $\mathcal{O}(N)$ work. In three dimensions, a modest grid
@@ -70,6 +70,7 @@ in $z$. Then
   \frac{u_E + u_W + u_N + u_S + u_T + u_B - 6\,u_P}{\Delta x^2}.
   \label{eq:gmres-7pt}
 \end{equation}
+The notation $u_E$ denotes $u$ as evaluated at $u(i + 1, j, k)$ and $u_T = u(i, j, k + 1)$.
 \index{seven-point Laplacian}
 
 \begin{figure}[htbp]
@@ -78,8 +79,7 @@ in $z$. Then
   \caption{The seven-point stencil for the three-dimensional Laplacian. The
   center point $P$ should be highlighted, with its six neighbors $E, W$ (along
   $x$), $N, S$ (along $y$), and $T, B$ (along $z$) labelled in the compass
-  notation and connected to $P$, matching the colors of the one-dimensional
-  stencil figures in Chapter~\ref{chpt:FDM}.}
+  notation and connected to $P$.}
   \label{fig:gmres-stencil}
 \end{figure}
 
@@ -95,7 +95,7 @@ for the solution $u$?
 Stacking the $N^3$ unknowns row-wise into a single vector $\mathbf{u}$ turns
 \eqref{eq:gmres-7pt} into a linear system $L\mathbf{u} = \mathbf{f}$. The
 matrix $L$ can be built from the one-dimensional matrix
-$D_2 \in \mathbb{R}^{N\times N}$ using Kronecker products:
+$D_2 \in \mathbb{R}^{N\times N}$ using Kronecker products, as we did for 2D, such that
 \begin{equation}
   L = I \otimes I \otimes D_2 \;+\; I \otimes D_2 \otimes I
       \;+\; D_2 \otimes I \otimes I ,
@@ -112,8 +112,6 @@ $A\in\mathbb{R}^{m\times n}$ and $B$ of any size,
   \end{bmatrix}.
 \]
 \index{Kronecker product}
-
-
 
 
 The matrix $L$ is sparse, but its bandwidth is $N^2$. A direct solver such as
@@ -473,9 +471,6 @@ end
 \subsection{python}
 In python, element-by-element loops over $N^3$ points are far too slow to be
 practical, so the matrix-free operator below is written with array slicing.
-A zero-padded copy of \texttt{u} supplies the ghost layer, which plays the
-same role as the zero-initialized neighbors in the MATLAB loop. The operator
-is wrapped in a \texttt{LinearOperator} so that \texttt{gmres} can call it.
 Note that recent versions of SciPy call the relative tolerance
 \texttt{rtol}.
 
