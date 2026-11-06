@@ -400,7 +400,14 @@ known value across the linear system, the (now first) row for $\phi_1$ becomes
         -\sin(x_1) - \frac{\alpha}{\Delta x^2}
     \end{bmatrix}. \label{rhsDirTop}
 \end{equation}
-Both methods are equivalent.
+Both methods are equivalent, but produce different Laplacian matricies, as seen in \ref{fig:spyL}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{FDM/images/sparsityPatternsLap.pdf}
+    \caption{Sparsity pattern produced by \texttt{spy(L)} for equivalent Laplacian operators $L$, either including exterior points (left) or excluding exterior points (right).}
+    \label{fig:spyL}
+\end{figure}
 
 \paragraph{Type~II.} 
 On a Type~II grid there is no discrete point at the boundary, so we can only implement the condition on the right-hand side of our linear system. We approximate the boundary as the midpoint between $x_{-1/2}$ and $x_{1/2}$:
