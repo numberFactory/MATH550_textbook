@@ -1,0 +1,36 @@
+
+# ---- LaTeX build artifacts ----
+*.aux
+*.log
+*.out
+*.toc
+*.bcf
+*.run.xml
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+
+# index
+*.idx
+*.ilg
+*.ind
+
+# minitoc
+*.maf
+*.mtc
+*.mtc[0-9]*
+
+# other common LaTeX byproducts
+*.lof
+*.lot
+*.nav
+*.snm
+*.dvi
+*.xdv
+
+# ---- OS / editor clutter ----
+.DS_Store
+*~
