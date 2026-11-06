@@ -1,0 +1,363 @@
+\chapter{Immersed Boundary Methods}
+\label{chpt:IBM}
+
+% ---------------------------------------------------------------------------
+% Placeholder for figures that have not been made yet. Replace each
+% \IBfigplaceholder{...} with \includegraphics once the figure exists.
+% ---------------------------------------------------------------------------
+\providecommand{\IBfigplaceholder}[1]{%
+  \fbox{\parbox[c][#1][c]{0.85\textwidth}{\centering\sffamily\small
+  \textbf{[Figure to be added]}}}}
+
+Immersed boundary methods (IBMs) are built from a numerical framework for
+\emph{fluid--structure interaction} (FSI), and specifically designed to model interactions where an object is immersed in a viscous, incompressible fluid. The method was introduced by Peskin to
+simulate blood flow around heart valves \parencite{peskin1972} and has
+since been used for swimming organisms, cell mechanics, vesicles, flexible
+fibers, and many other systems \parencite{peskin2002, mittalIaccarino2005}.
+\index{immersed boundary method}
+
+Let's consider an object (a heart valve leaflet, a red blood cell, a wire frame)
+immersed (or submerged) in a fluid domain. If we were to implement the methods of
+Chapter~\ref{chpt:FDM} directly, we need a \textit{body-fitted} grid (or mesh) that conforms to the
+object so that boundary conditions can be imposed on the immersed object. These grids are tedious to build for complex geometries and if the
+object moves or deforms, the grid must be rebuilt at every time step. For a system stepping forward at approximately $10^{-4}$ seconds, this remeshing process is expensive and tedious, especially in three dimensions.
+
+IBMs avoid body-fitted grids entirely through the use of two grids: one for the fluid field and one for the immersed object. The PDEs that describe the fluid system are solved on the
+same uniform Eulerian grid we have used all along, ignoring the object
+completely. The object is described by its own set of curvilinear, Lagrangian points and its
+effect on the fluid system is imposed onto the fluid domain.
+
+Everything we need to implement an IBM
+has appeared in earlier chapters: the five-point Laplacian
+(Chapter~\ref{chpt:FDM}), block systems with a constraint
+(Chapter~\ref{chpt:staggered}), and matrix-free GMRES
+(Chapter~\ref{chpt:GMRES}). For those curious, a similar and more in-depth treatment can be found in Peskin's
+lecture notes \parencite{peskinNotes}.
+
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}
+        \centering
+        \includegraphics[angle=90, width=1\linewidth]{IBM/images/bodyFittedExample.pdf}
+    \end{subfigure}
+
+    \vspace{1em}
+
+    \begin{subfigure}
+        \centering
+        \includegraphics[angle=90, width=1\linewidth]{IBM/images/ibExample.pdf}
+    \end{subfigure}
+  \caption{Two ways to discretize a fluid domain containing a closed
+  curve on which a boundary condition is imposed. Top: a body-fitted
+  (unstructured) mesh whose edges conform to the curve. Right: a uniform
+  Cartesian grid with the curve drawn on top and represented by its own
+  set of points (markers) that do not coincide with grid nodes.}
+  \label{fig:IBbodyfitted}
+\end{figure}
+
+
+\begin{remark}
+Throughout this chapter, the term \emph{immersed boundary} refers to the
+object inside the domain, not to the edge of the computational domain. The
+domain edge is handled by ordinary boundary conditions, exactly as in
+Section~\ref{sec:2Dbcs}.
+\end{remark}
+
+
+
+
+\section{A Model Problem: A Ring in a Membrane}
+\label{sec:IBmodel}
+An elastic membrane is stretched across a square frame at height zero. Inside the frame, a stiff elliptical wire
+ring is pressed into the membrane and holds it at height $g$ all the way
+around. What shape does the membrane take and what is the force exerted by the ring on it? These questions are easily answered with an IB simulation. 
+
+Let $\Omega = [0,2\pi]\times[0,2\pi]$ define the domain of the frame. The height $u(x,y)$ of a membrane that has a force $f(x,y)$ applied to its surface satisfies
+\begin{equation}
+  \nabla^2 u = f \quad \text{in } \Omega, \qquad
+  u |_{\partial\Omega} = 0.
+  \label{eq:IBpoisson}
+\end{equation}
+Note this is just the Poisson problem of \eqref{eq:2Dpoisson}. The body of the ring can be defined as the ellipse
+\begin{equation}
+  \Gamma: \quad X(\theta) = \pi + 1.5\cos\theta, \qquad
+  Y(\theta) = \pi + 0.75\sin\theta, \qquad 0 \le \theta < 2\pi.
+  \label{eq:IBellipse}
+\end{equation}
+The position of the membrane and ring must be identical where they meet, as they are touching and we will assume the membrane does not tear. Let $g(\theta)$ describe both the position of the ring and membrane at the points of $\Omega$ where they meet, such that 
+\begin{equation}
+  u\big(X(\theta), Y(\theta)\big) = g(\theta), \qquad 0 \le \theta < 2\pi.
+  \label{eq:IBring}
+\end{equation}
+
+Physically, the ring holds the membrane in place at height $g$ by pushing on it. This
+push does not act over the whole surface the way $f$ does; it acts only
+where the ring touches the membrane, along the curve $\Gamma$. We
+therefore describe it by a force per unit length $\lambda(s)$, where $s$
+is arc length along $\Gamma$. We can think of this as a short piece of the ring of length $ds$
+pushing on the membrane with force $\lambda(s)\,ds$. Adding this force,
+concentrated on $\Gamma$, to \eqref{eq:IBpoisson} gives
+\begin{equation}
+  \nabla^2 u = f + \int_\Gamma \lambda(s)\,
+  \delta\big(\mathbf{x} - \mathbf{X}(s)\big)\,ds,
+  \label{eq:IBpoissonlambda}
+\end{equation}
+where $\mathbf{X}(s)$ is the point on the ring and
+$\delta(\mathbf{x}) = \delta(x)\,\delta(y)$ is the two-dimensional Dirac
+delta function. The force density $\lambda$ is a new unknown and
+\eqref{eq:IBring} is the equation that determines it.
+
+
+Equation \eqref{eq:IBpoissonlambda} has the same form as an equation from
+electrostatics. Picture a wire bent into the shape of $\Gamma$ sitting in
+a uniform medium (i.e., air or water) inside a grounded square box. If the
+wire carries electric charge, it creates an electric potential at every
+point of the medium around it. That electric potential satisfies Poisson's
+equation, with the charge on the wire as its source. The two problems
+match term by term: the potential in the medium plays the role of the
+membrane height $u$, the grounded box plays the role of the frame held at
+$u = 0$, and the charge per unit length on the wire plays the role of
+$\lambda$.  From here on, we will think of this problem in terms of this electrostatics problem. 
+
+
+\subsection{Two Descriptions}
+\label{sec:IBdescriptions}
+
+Two different sets of points are used at once, and keeping them separate
+is the most important bookkeeping in IB methods.
+
+\begin{definition}
+\textbf{Eulerian variables} are functions of a fixed spatial position
+$\mathbf{x} \in \Omega$. The solution $u$ and the force $f$ are Eulerian.
+They are defined on the same grid we have used in previous chapters.
+\end{definition}
+
+\begin{definition}
+\textbf{Lagrangian variables} live on the immersed boundary and are
+functions of a coordinate along it, here the angle $\theta$. The points of
+the ring $\mathbf{X}(\theta)$, the boundary values $g(\theta)$, and the
+charges $\lambda$ are Lagrangian.
+\end{definition}
+\index{Eulerian description}\index{Lagrangian description}
+
+Now we discretize the problem. Let the ring be represented by $N_{ib}$ IB points
+$\mathbf{X}_k = \big(X(\theta_k), Y(\theta_k)\big)$, with
+$\theta_k = k\,\Delta\theta$ with $\Delta\theta = 2\pi/N_{ib}$ for
+$k = 0,\dots,N_{ib}-1$. The local spacing between IB points is
+$\Delta s_k = |\mathbf{X}'(\theta_k)|\,\Delta\theta$ and, as spacing on an ellipse is not uniform in arc length, the average space is the
+perimeter of the ring divided by $N_{ib}$. On the IB points, the line
+integral in \eqref{eq:IBpoissonlambda} becomes a sum of point charges,
+\begin{equation}
+  \nabla^2 u = f + \sum_{k=0}^{N_{ib}-1} q_k\,
+  \delta(\mathbf{x} - \mathbf{X}_k),
+  \qquad q_k \approx \lambda(s_k)\,\Delta s_k,
+  \label{eq:IBpoissonq}
+\end{equation}
+and the condition \eqref{eq:IBring} becomes $u(\mathbf{X}_k) = g_k$ with
+$g_k = g(\theta_k)$.
+\section{Regularized Delta Functions}
+\label{sec:IBdelta}
+\index{immersed boundary method!regularized delta function}
+
+A classic delta function cannot be represented on a grid. We will replace it
+the Gaussian 
+
+\begin{equation}
+  \delta_a(x, y) = \frac{1}{2\pi a^2}\,
+  \exp\!\left(-\frac{x^2 + y^2}{2a^2}\right)
+  = \underbrace{\frac{e^{-x^2/2a^2}}{\sqrt{2\pi}\,a}}_{\delta_a(x)}\;
+    \underbrace{\frac{e^{-y^2/2a^2}}{\sqrt{2\pi}\,a}}_{\delta_a(y)},
+  \label{eq:IBgauss}
+\end{equation}
+where the width $a$ is tied to the grid spacing, $a = c\,\Delta x$ for a
+constant $c$ of order one. In this chapter we take $a = 1.2\,\Delta x$. As
+$\Delta x \to 0$, $\delta_a$ becomes narrower and taller and approaches the
+true delta function. Using a Gaussian in this way is the idea behind the
+\emph{force coupling method} \parencite{maxeyPatel2001}, and the Gaussian delta function
+is the only part of this chapter that differs from Peskin's version of the
+method. 
+
+On the grid, integrals become sums. The property we need most is that the
+discrete version of $\int \delta_a(x - X)\,dx = 1$ holds no matter where
+$X$ sits relative to the grid:
+\begin{equation}
+  \sum_i \delta_a(x_i - X)\,\Delta x \approx 1 .
+  \label{eq:IBunity}
+\end{equation}
+
+\begin{remark}
+The Gaussian is never exactly zero, so in principle every IB point
+touches every grid point. To make this more realistic and cost-effective, we would want to define a \textit{support} for each delta function so it only impacts subsets of the domain.
+\end{remark}
+
+
+\section{Spreading and Interpolation}
+\label{sec:IBspreadinterp}
+\index{immersed boundary method!spreading}
+\index{immersed boundary method!interpolation}
+
+We use the Type~I grid of Section~\ref{sec:2Dgridtypes} with $N$ interior
+points in each direction, $x_i = i\,\Delta x$ and $y_j = j\,\Delta x$ for
+$i, j = 1, \dots, N$, with $\Delta x = \Delta y = 2\pi/(N+1)$. The values on
+the walls are known, so only interior points are unknowns. Two operators
+connect the Eulerian grid to the IB points.
+
+\begin{definition}
+The \textbf{spreading operator} $S$ spreads force of the charges $q_k$ onto a grid
+function:
+\begin{equation}
+  (S\mathbf{q})_{i,j} = \sum_{k=0}^{N_{ib}-1} q_k\,
+  \delta_a(x_i - X_k,\, y_j - Y_k).
+  \label{eq:IBspread}
+\end{equation}
+\end{definition}
+
+\begin{definition}
+The \textbf{interpolation operator} $J$ interpolates a grid function onto the immersed object:
+\begin{equation}
+  (J\mathbf{u})_k = \sum_{i=1}^{N}\sum_{j=1}^{N} u_{i,j}\,
+  \delta_a(x_i - X_k,\, y_j - Y_k)\,\Delta x^2 .
+  \label{eq:IBinterp}
+\end{equation}
+\end{definition}
+
+Spreading is the discrete version of the sum of delta functions in
+\eqref{eq:IBpoissonq}. Interpolation is the discrete version of
+$u(\mathbf{X}_k) = \iint u(\mathbf{x})\,\delta(\mathbf{x} - \mathbf{X}_k)\,d\mathbf{x}$. Spreading turns the charges on the wire into the source of the potential on
+the grid, and interpolation reads the potential from the grid back at the
+wire. Both operators are linear. With the grid values
+flattened row-wise as in \eqref{eq:order}, $S$ is an $N^2 \times N_{ib}$
+matrix and $J$ is $N_{ib} \times N^2$.
+
+\section{The Saddle Point System}
+\label{sec:IBsaddle}
+\index{saddle point system}
+
+Now we can put the pieces together. We discretize \eqref{eq:IBpoissonq}
+with the five-point Laplacian of Section~\ref{sec:fivepoint}, replace the
+sum of delta functions with spreading, and replace the condition on the
+wire, $u(\mathbf{X}_k) = g_k$, with interpolation. Let $L$ be the
+$N^2 \times N^2$ Laplacian \eqref{eq:2Dlaplacian-kron} with the wall values
+removed. Then the potential $\mathbf{u}$ and the charges $\mathbf{q}$ must
+satisfy
+\begin{align}
+  L\mathbf{u} - S\mathbf{q} &= \mathbf{f} + \mathbf{b},
+  \label{eq:IBsaddleTop}\\
+  J\mathbf{u} &= \mathbf{g},
+  \label{eq:IBsaddleBottom}
+\end{align}
+where $\mathbf{b}$ holds the contributions of the wall values, as in
+\eqref{eq:2Ddir-typeI}. The first equation says the potential on the grid
+is produced by the forcing $f$ and the charges on the wire. The second
+says that the potential read back at the wire must equal $g$. In our
+problem the box is grounded, so $\mathbf{b} = \mathbf{0}$. Stacking the
+two equations gives the block system
+\begin{equation}
+  \begin{bmatrix}
+    L & -S \\
+    J & 0
+  \end{bmatrix}
+  \begin{bmatrix}
+    \mathbf{u} \\ \mathbf{q}
+  \end{bmatrix}
+  =
+  \begin{bmatrix}
+    \mathbf{f} + \mathbf{b} \\ \mathbf{g}
+  \end{bmatrix},
+  \label{eq:IBsaddle}
+\end{equation}
+with $N^2 + N_{ib}$ unknowns: $N^2$ values of the potential on the grid and
+$N_{ib}$ charges on the wire.
+
+This system should look familiar. Compare \eqref{eq:IBsaddle} with the
+Stokes system \eqref{eq:stg-block}. In both, one of the unknowns (the
+pressure there, the charges here) has no equation of its own. It appears
+only in the other equations and its job is to enforce a constraint. An unknown of this kind is called a \emph{Lagrange multiplier}
+and the zero block on the diagonal is its signature. Systems with this
+structure are called \emph{saddle point systems}.
+\index{Lagrange multiplier}
+
+\subsection{How Far Apart Should IB Points Be?}
+\label{sec:IBclose}
+
+The spacing of the IB points affects both the accuracy of the solution and
+how hard the system \eqref{eq:IBsaddle} is to solve. If two IB points are
+much closer together than the kernel width $a$, a charge at one creates
+almost the same potential on the grid as a charge at the other. Their
+columns of $S$ are nearly identical, so the system cannot decide how to
+split the charge between them, and \eqref{eq:IBsaddle} becomes badly
+conditioned. On the other hand, each IB point controls the potential only
+in a neighborhood about as wide as its kernel. If the IB points are too far
+apart, their kernels do not overlap and the potential can leak through the
+gaps between them. Choosing the average spacing $\Delta s$ relative to
+$\Delta x$ (and to $a$) is therefore a balance between these two effects.
+
+\begin{remark}
+Starting with $\Delta s \approx \Delta x$ is reasonable, but it is worth
+checking for yourself how the number of GMRES iterations and the accuracy
+of the solution change as $\Delta s/\Delta x$ is varied.
+\end{remark}
+
+
+\section{Solving Without a Matrix}
+\label{sec:IBmatfree}
+\index{matrix-free methods}
+
+The system \eqref{eq:IBsaddle} has $N^2 + N_{ib}$ unknowns, and since the
+Gaussian is never zero, the blocks $S$ and $J$ are effectively dense. We do
+not want to build this matrix. Luckily, as discussed in
+Section~\ref{sec:matfree-idea}, GMRES only needs a function that applies
+the matrix to a vector. For \eqref{eq:IBsaddle}, that function takes a
+stacked vector $\mathbf{z} = [\mathbf{u}; \mathbf{q}]$ and returns
+\[
+  \mathbf{z} \;\mapsto\;
+  \begin{bmatrix}
+    L\mathbf{u} - S\mathbf{q} \\ J\mathbf{u}
+  \end{bmatrix}.
+\]
+Each piece is something we already know how to apply without a matrix:
+$L$ with the five-point stencil (as in \texttt{Apply\_Lap} of
+Section~\ref{sec:gmres-code}, in two dimensions instead of three), and $S$
+and $J$ directly from \eqref{eq:IBspread} and \eqref{eq:IBinterp}. 
+\begin{remark}
+GMRES assumes the function it is given is \emph{linear}. Known data, such
+as $\mathbf{f}$, the wall values, and $\mathbf{g}$, belong on the
+right-hand side of \eqref{eq:IBsaddle} and should never appear inside the
+matrix-apply function. \end{remark}
+
+\begin{remark}
+A matrix-free function is hard to inspect. For small $N$, we can build the
+matrix it represents one column at a time by applying the function to each
+column of the identity. Looking at its sparsity plot
+(Section~\ref{sec:stg-kron}) or checking that $J = \Delta x^2 S^T$ is the
+single most useful debugging step in this chapter.
+\end{remark}
+
+The choices discussed in Chapter~\ref{chpt:GMRES} still apply here: the
+tolerance (Section~\ref{sec:gmres-tol}), the restart length
+(Section~\ref{sec:gmres-restart}), and the initial guess
+(Section~\ref{sec:gmres-x0}). Keep in mind that saddle point systems are
+harder for GMRES than the Laplacian alone. Recall from
+\eqref{eq:gmres-cond} that the condition number links the residual GMRES
+controls to the error we actually care about. If restarting stalls the
+iteration, try running GMRES without restarts by setting the restart
+length to the size of the system (or as large as memory allows) and
+allowing a single outer iteration.
+
+\section{Numerical Implementation}
+\label{sec:IBcode}
+
+The code below sets up our problem with $f = 0$ and $g = 1$, places IB
+points around the wire about $\Delta x$ apart, defines the Gaussian delta
+function, spreading, interpolation, and a matrix-free five-point
+Laplacian, and calls GMRES without restarts. The function that applies the
+saddle point matrix is left for you to write. The commented lines build
+the matrix column by column for debugging, as described in
+Section~\ref{sec:IBmatfree}, and should only be used with a small $N$.
+
+\subsection{MATLAB}
+\lstinputlisting[language=matlab]{IBM/code/ib_poisson_2d.m}
+
+\subsection{python}
+\lstinputlisting[language=python]{IBM/code/ib_poisson_2d.py}
