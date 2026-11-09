@@ -10,24 +10,24 @@
   \textbf{[Figure to be added]}}}}
 
 Immersed boundary methods (IBMs) are built from a numerical framework for
-\emph{fluid--structure interaction} (FSI), and specifically designed to model interactions where an object is immersed in a viscous, incompressible fluid. The method was introduced by Peskin to
+\emph{fluid--structure interaction} (FSI) and specifically designed to model interactions where an object is immersed in a viscous, incompressible fluid. The method was introduced by Peskin to
 simulate blood flow around heart valves \parencite{peskin1972} and has
 since been used for swimming organisms, cell mechanics, vesicles, flexible
 fibers, and many other systems \parencite{peskin2002, mittalIaccarino2005}.
 \index{immersed boundary method}
 
-Let's consider an object (a heart valve leaflet, a red blood cell, a wire frame)
-immersed (or submerged) in a fluid domain. If we were to implement the methods of
-Chapter~\ref{chpt:FDM} directly, we need a \textit{body-fitted} grid (or mesh) that conforms to the
-object so that boundary conditions can be imposed on the immersed object. These grids are tedious to build for complex geometries and if the
-object moves or deforms, the grid must be rebuilt at every time step. For a system stepping forward at approximately $10^{-4}$ seconds, this remeshing process is expensive and tedious, especially in three dimensions.
+Let's consider an object (a heart valve leaflet, a red blood cell, a wire frame) completely
+submerged, or \textit{immersed}, in a fluid domain. If we were to implement the methods of
+Chapter~\ref{chpt:FDM} directly, we need a \textit{body-fitted mesh} (or grid) that conforms to the
+object so that boundary conditions can be imposed on the immersed object. These meshes are tedious to build for complex geometries and must be rebuilt at every time step if the
+object moves or deforms. For a system stepping forward at approximately $10^{-4}$ seconds, this remeshing process is expensive and difficult to implement, especially in three dimensions.
 
-IBMs avoid body-fitted grids entirely through the use of two grids: one for the fluid field and one for the immersed object. The PDEs that describe the fluid system are solved on the
+IBMs avoid body-fitted meshes entirely through the use of two grids: one for the fluid field and one for the immersed object. The PDEs that describe the fluid system are solved on the
 same uniform Eulerian grid we have used all along, ignoring the object
-completely. The object is described by its own set of curvilinear, Lagrangian points and its
-effect on the fluid system is imposed onto the fluid domain.
+completely. The object is then described by its own set of curvilinear, Lagrangian points and its
+effect on the fluid system is simply imposed onto the fluid domain.
 
-Everything we need to implement an IBM
+Everything we need to implement a basic IBM
 has appeared in earlier chapters: the five-point Laplacian
 (Chapter~\ref{chpt:FDM}), block systems with a constraint
 (Chapter~\ref{chpt:staggered}), and matrix-free GMRES
@@ -69,13 +69,12 @@ Section~\ref{sec:2Dbcs}.
 
 \section{A Model Problem: A Ring in a Membrane}
 \label{sec:IBmodel}
-An elastic membrane is stretched across a square frame at height zero. Inside the frame, a stiff elliptical wire
-ring is pressed into the membrane and holds it at height $g$ all the way
-around. What shape does the membrane take and what is the force exerted by the ring on it? These questions are easily answered with an IB simulation. 
+This chapter will work through a model problem to help develop the basic ideas of IBMs. Consider an elastic membrane stretched across a square frame, with the system positioned at height zero. Inside the frame, a stiff wire
+ring is pressed into the membrane and holds it at height $g$. What shape does the membrane take and what force does the ring exert on it? These questions are easily answered with an IB simulation. 
 
-Let $\Omega = [0,2\pi]\times[0,2\pi]$ define the domain of the frame. The height $u(x,y)$ of a membrane that has a force $f(x,y)$ applied to its surface satisfies
+Let $\Omega = [0,2\pi]\times[0,2\pi]$ define the domain of the frame. The height $u(x,y)$ of a membrane that has a net force $f_{\text{net}}(x,y)$ applied to its surface satisfies
 \begin{equation}
-  \nabla^2 u = f \quad \text{in } \Omega, \qquad
+  \nabla^2 u = f_{\text{net}} \quad \text{in } \Omega, \qquad
   u |_{\partial\Omega} = 0.
   \label{eq:IBpoisson}
 \end{equation}
@@ -85,21 +84,20 @@ Note this is just the Poisson problem of \eqref{eq:2Dpoisson}. The body of the r
   Y(\theta) = \pi + 0.75\sin\theta, \qquad 0 \le \theta < 2\pi.
   \label{eq:IBellipse}
 \end{equation}
-The position of the membrane and ring must be identical where they meet, as they are touching and we will assume the membrane does not tear. Let $g(\theta)$ describe both the position of the ring and membrane at the points of $\Omega$ where they meet, such that 
+The position of the membrane and ring must be identical where they meet, as they are touching. We will assume the membrane does not tear or break with the provided force. Let $g(\theta)$ describe both the position of the ring and membrane at the points $\theta \in \Omega$ where they meet, such that 
 \begin{equation}
   u\big(X(\theta), Y(\theta)\big) = g(\theta), \qquad 0 \le \theta < 2\pi.
   \label{eq:IBring}
 \end{equation}
 
 Physically, the ring holds the membrane in place at height $g$ by pushing on it. This
-push does not act over the whole surface the way $f$ does; it acts only
+push does not act over the whole surface; it acts only
 where the ring touches the membrane, along the curve $\Gamma$. We
 therefore describe it by a force per unit length $\lambda(s)$, where $s$
 is arc length along $\Gamma$. We can think of this as a short piece of the ring of length $ds$
-pushing on the membrane with force $\lambda(s)\,ds$. Adding this force,
-concentrated on $\Gamma$, to \eqref{eq:IBpoisson} gives
+pushing on the membrane with force $\lambda(s)\,ds$. Then, the net force acting on the membrane can be defined as $f_{\text{net}} = f_{dom} + f_{\text{ring}}$, where $f$ denotes the forces on the membrane associated with the domain (i.e., atmospheric pressure) and $f_{\text{ring}}$ the force exert by the ring. \eqref{eq:IBpoisson} can then be rewritten as
 \begin{equation}
-  \nabla^2 u = f + \int_\Gamma \lambda(s)\,
+  \nabla^2 u = f_{\text{dom}} + f_{\text{ring}} = f_{\text{dom}} + \int_{\Gamma} \lambda(s)\,
   \delta\big(\mathbf{x} - \mathbf{X}(s)\big)\,ds,
   \label{eq:IBpoissonlambda}
 \end{equation}
@@ -149,7 +147,7 @@ $\Delta s_k = |\mathbf{X}'(\theta_k)|\,\Delta\theta$ and, as spacing on an ellip
 perimeter of the ring divided by $N_{ib}$. On the IB points, the line
 integral in \eqref{eq:IBpoissonlambda} becomes a sum of point charges,
 \begin{equation}
-  \nabla^2 u = f + \sum_{k=0}^{N_{ib}-1} q_k\,
+  \nabla^2 u = f_{\text{dom}} + \sum_{k=0}^{N_{ib}-1} q_k\,
   \delta(\mathbf{x} - \mathbf{X}_k),
   \qquad q_k \approx \lambda(s_k)\,\Delta s_k,
   \label{eq:IBpoissonq}
@@ -247,9 +245,9 @@ satisfy
   J\mathbf{u} &= \mathbf{g},
   \label{eq:IBsaddleBottom}
 \end{align}
-where $\mathbf{b}$ holds the contributions of the wall values, as in
-\eqref{eq:2Ddir-typeI}. The first equation says the potential on the grid
-is produced by the forcing $f$ and the charges on the wire. The second
+where $\mathbf{b}$ holds the boundary condition contributions of the wall values, as in
+\eqref{eq:2Ddir-typeI} and $\mathbf{f}$ holds $f_{\text{dom}}$. The first equation says the potential on the grid
+is produced by the domain forcing $f_{\text{dom}}$ and the charges on the wire. The second
 says that the potential read back at the wire must equal $g$. In our
 problem the box is grounded, so $\mathbf{b} = \mathbf{0}$. Stacking the
 two equations gives the block system
@@ -348,12 +346,13 @@ allowing a single outer iteration.
 \section{Numerical Implementation}
 \label{sec:IBcode}
 
-The code below sets up our problem with $f = 0$ and $g = 1$, places IB
+The code below sets up our problem with $f_{\text{dom}} = 0$ and $g = 1$, places IB
 points around the wire about $\Delta x$ apart, defines the Gaussian delta
 function, spreading, interpolation, and a matrix-free five-point
 Laplacian, and calls GMRES without restarts. The function that applies the
 saddle point matrix is left for you to write. The commented lines build
-the matrix column by column for debugging, as described in
+the matrix column by column for debugging.
+
 Section~\ref{sec:IBmatfree}, and should only be used with a small $N$.
 
 \subsection{MATLAB}
