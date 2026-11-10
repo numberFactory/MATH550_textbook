@@ -2,7 +2,7 @@
 \label{chpt:FDM}
 
 Finite difference methods (FDM) are collocation methods based on Taylor
-series approximation and are used to approximate derivatives and derivative operators. They are an old and simple numerical method which became popular after the development as computers due to the sheer amount of arithmetic for application. In this chapter, we will define numerical schemes to approximate first and second derivatives. These schemes can then be extended to help solve PDEs by approximating derivatives and derivative operators ($\nabla, \nabla^2$).
+series approximation and are used to approximate derivatives and derivative operators. They are an old and simple numerical method which became popular after the development of computers due to the sheer amount of arithmetic for application. In this chapter, we will define numerical schemes to approximate first and second derivatives. These schemes can then be extended to help solve PDEs by approximating derivatives and derivative operators ($\nabla, \nabla^2$).
 \index{finite difference methods}
 \section{The Basics}
 
@@ -108,9 +108,9 @@ the Taylor series around $x_i$ estimates $\phi$ at the last or backward point $x
 \label{sec:central}
 Reorganizing the forward and backwards Taylor series approximations yields
 \begin{align}
-\phi'_i &=  \frac{\phi_{i+1}-\phi_i}{\Delta x} - \frac{\phi''_i}{2}\,\Delta x - \frac{\phi'''_i}{3}\,\Delta x^2 + \cdots \label{eq:add1}
+\phi'_i &=  \frac{\phi_{i+1}-\phi_i}{\Delta x} - \frac{\phi''_i}{2}\,\Delta x - \frac{\phi'''_i}{6}\,\Delta x^2 + \cdots \label{eq:add1}
 \\
- \phi'_i &= \frac{\phi_i-\phi_{i-1}}{\Delta x}  + \frac{\phi''_i}{2}\,\Delta x - \frac{\phi'''_i}{3}\,\Delta x^2 + \cdots \label{eq:add2}
+ \phi'_i &= \frac{\phi_i-\phi_{i-1}}{\Delta x}  + \frac{\phi''_i}{2}\,\Delta x - \frac{\phi'''_i}{6}\,\Delta x^2 + \cdots \label{eq:add2}
 \end{align}
 Adding  \eqref{eq:add1} and \eqref{eq:add2} and dividing by a factor of two obtains a second-order accurate scheme:
 \begin{equation}
@@ -149,7 +149,7 @@ To approximate $\phi''_i$ we estimate in the forward and backward directions:
 Adding \eqref{eq:add11} and \eqref{eq:add22}, the odd-order terms cancel and
 \[
 \phi_{i+1}+\phi_{i-1} = 2\,\phi_i + \phi''_i\,\Delta x^2
-+ \frac{\phi'''_i}{12}\,\Delta x^4 + \cdots.
++ \frac{\phi''''_i}{12}\,\Delta x^4 + \cdots.
 \]
 \vspace*{-2mm}
 Solving for $\phi''_i$ gives the second-order central
@@ -225,7 +225,7 @@ we would end up with this linear system:
     =
     \begin{bmatrix}
         -\sin(x_0)  \\
-        -\sin(x_2) \\
+        -\sin(x_1) \\
         \vdots \\
                 \vdots \\
         -\sin(x_{N-1}) \\
@@ -344,7 +344,7 @@ For the first row of the system~\ref{baseFDM}, this would look like
     \end{bmatrix}^T
     =
     \begin{bmatrix}
-        -\sin(x_1)
+        -\sin(x_0)
     \end{bmatrix}. \label{periodQueen}
 \end{equation}
 
@@ -1041,7 +1041,7 @@ where two edges meet, which we will treat separately in Section~\ref{sec:2Dcorne
 \index{Dirichlet boundary condition}
 
 Recall that a Dirichlet condition prescribes the \emph{value} of $\phi$ on the boundary.
-Along the west edge, $\phi(a,y_j)=\equiv\alpha_j$, such that $\phi$ evaluates as the constant $\alpha_j$ for all $j$ along the west edge ($x = a$).
+Along the west edge, $\phi(a,y_j) \equiv \alpha_j$, such that $\phi$ evaluates as the constant $\alpha_j$ for all $j$ along the west edge ($x = a$).
 \paragraph{Type~I.}
 The west-edge nodes $(0,j)$ lie exactly on the boundary, so the condition is simply $\phi_{0,j}=\alpha_j$. As in one dimension there are two
 equivalent implementations. We may overwrite the boundary row so that it reads
@@ -1227,7 +1227,7 @@ the array-flattening convention differs between the two languages, and each
 listing comments its own convention.
 
 \subsection{MATLAB}
-\lstinputlisting[language=python]{FDM/code/laplacian_2d_assembly.py}
+\lstinputlisting[language=python]{FDM/code/laplacian_2d_assembly.m}
 
 \subsection{python}
 

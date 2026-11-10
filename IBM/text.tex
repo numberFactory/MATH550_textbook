@@ -50,7 +50,7 @@ lecture notes \parencite{peskinNotes}.
     \end{subfigure}
   \caption{Two ways to discretize a fluid domain containing a closed
   curve on which a boundary condition is imposed. Top: a body-fitted
-  (unstructured) mesh whose edges conform to the curve. Right: a uniform
+  (unstructured) mesh whose edges conform to the curve. Bottom: a uniform
   Cartesian grid with the curve drawn on top and represented by its own
   set of points (markers) that do not coincide with grid nodes.}
   \label{fig:IBbodyfitted}
@@ -353,7 +353,6 @@ Laplacian, and calls GMRES without restarts. The function that applies the
 saddle point matrix is left for you to write. The commented lines build
 the matrix column by column for debugging.
 
-Section~\ref{sec:IBmatfree}, and should only be used with a small $N$.
 
 \subsection{MATLAB}
 \lstinputlisting[language=matlab]{IBM/code/ib_poisson_2d.m}
