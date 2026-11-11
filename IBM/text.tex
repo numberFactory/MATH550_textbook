@@ -67,56 +67,40 @@ Section~\ref{sec:2Dbcs}.
 
 
 
-\section{A Model Problem: A Ring in a Membrane}
+\section{A Model Problem}
 \label{sec:IBmodel}
-This chapter will work through a model problem to help develop the basic ideas of IBMs. Consider an elastic membrane stretched across a square frame, with the system positioned at height zero. Inside the frame, a stiff wire
-ring is pressed into the membrane and holds it at height $g$. What shape does the membrane take and what force does the ring exert on it? These questions are easily answered with an IB simulation. 
+This chapter will work through a model problem to help develop the basic ideas of IBMs.
 
-Let $\Omega = [0,2\pi]\times[0,2\pi]$ define the domain of the frame. The height $u(x,y)$ of a membrane that has a net force $f_{\text{net}}(x,y)$ applied to its surface satisfies
+Let $\Omega = [0,2\pi]\times[0,2\pi]$ define the domain and consider
 \begin{equation}
-  \nabla^2 u = f_{\text{net}} \quad \text{in } \Omega, \qquad
+  \nabla^2 u = f \quad \text{in } \Omega, \qquad
   u |_{\partial\Omega} = 0.
   \label{eq:IBpoisson}
 \end{equation}
-Note this is just the Poisson problem of \eqref{eq:2Dpoisson}. The body of the ring can be defined as the ellipse
+Note this is just the Poisson problem of \eqref{eq:2Dpoisson}. Let $\Gamma$ be the ellipse
 \begin{equation}
   \Gamma: \quad X(\theta) = \pi + 1.5\cos\theta, \qquad
   Y(\theta) = \pi + 0.75\sin\theta, \qquad 0 \le \theta < 2\pi.
   \label{eq:IBellipse}
 \end{equation}
-The position of the membrane and ring must be identical where they meet, as they are touching. We will assume the membrane does not tear or break with the provided force. Let $g(\theta)$ describe both the position of the ring and membrane at the points $\theta \in \Omega$ where they meet, such that 
+Let $g(\theta)$ describe the values of $u$ on $\Gamma$, such that
 \begin{equation}
   u\big(X(\theta), Y(\theta)\big) = g(\theta), \qquad 0 \le \theta < 2\pi.
   \label{eq:IBring}
 \end{equation}
 
-Physically, the ring holds the membrane in place at height $g$ by pushing on it. This
-push does not act over the whole surface; it acts only
-where the ring touches the membrane, along the curve $\Gamma$. We
-therefore describe it by a force per unit length $\lambda(s)$, where $s$
-is arc length along $\Gamma$. We can think of this as a short piece of the ring of length $ds$
-pushing on the membrane with force $\lambda(s)\,ds$. Then, the net force acting on the membrane can be defined as $f_{\text{net}} = f_{dom} + f_{\text{ring}}$, where $f$ denotes the forces on the membrane associated with the domain (i.e., atmospheric pressure) and $f_{\text{ring}}$ the force exert by the ring. \eqref{eq:IBpoisson} can then be rewritten as
+To enforce this condition, we add a force that acts only along the curve
+$\Gamma$. We describe it by a force per unit length $\lambda(s)$, where $s$
+is arc length along $\Gamma$. \eqref{eq:IBpoisson} can then be rewritten as
 \begin{equation}
-  \nabla^2 u = f_{\text{dom}} + f_{\text{ring}} = f_{\text{dom}} + \int_{\Gamma} \lambda(s)\,
+  \nabla^2 u = f + \int_{\Gamma} \lambda(s)\,
   \delta\big(\mathbf{x} - \mathbf{X}(s)\big)\,ds,
   \label{eq:IBpoissonlambda}
 \end{equation}
-where $\mathbf{X}(s)$ is the point on the ring and
+where $\mathbf{X}(s)$ is the point on $\Gamma$ and
 $\delta(\mathbf{x}) = \delta(x)\,\delta(y)$ is the two-dimensional Dirac
 delta function. The force density $\lambda$ is a new unknown and
 \eqref{eq:IBring} is the equation that determines it.
-
-
-Equation \eqref{eq:IBpoissonlambda} has the same form as an equation from
-electrostatics. Picture a wire bent into the shape of $\Gamma$ sitting in
-a uniform medium (i.e., air or water) inside a grounded square box. If the
-wire carries electric charge, it creates an electric potential at every
-point of the medium around it. That electric potential satisfies Poisson's
-equation, with the charge on the wire as its source. The two problems
-match term by term: the potential in the medium plays the role of the
-membrane height $u$, the grounded box plays the role of the frame held at
-$u = 0$, and the charge per unit length on the wire plays the role of
-$\lambda$.  From here on, we will think of this problem in terms of this electrostatics problem. 
 
 
 \subsection{Two Descriptions}
@@ -134,20 +118,20 @@ They are defined on the same grid we have used in previous chapters.
 \begin{definition}
 \textbf{Lagrangian variables} live on the immersed boundary and are
 functions of a coordinate along it, here the angle $\theta$. The points of
-the ring $\mathbf{X}(\theta)$, the boundary values $g(\theta)$, and the
+the curve $\mathbf{X}(\theta)$, the boundary values $g(\theta)$, and the
 charges $\lambda$ are Lagrangian.
 \end{definition}
 \index{Eulerian description}\index{Lagrangian description}
 
-Now we discretize the problem. Let the ring be represented by $N_{ib}$ IB points
+Now we discretize the problem. Let $\Gamma$ be represented by $N_{ib}$ IB points
 $\mathbf{X}_k = \big(X(\theta_k), Y(\theta_k)\big)$, with
 $\theta_k = k\,\Delta\theta$ with $\Delta\theta = 2\pi/N_{ib}$ for
 $k = 0,\dots,N_{ib}-1$. The local spacing between IB points is
 $\Delta s_k = |\mathbf{X}'(\theta_k)|\,\Delta\theta$ and, as spacing on an ellipse is not uniform in arc length, the average space is the
-perimeter of the ring divided by $N_{ib}$. On the IB points, the line
+perimeter of $\Gamma$ divided by $N_{ib}$. On the IB points, the line
 integral in \eqref{eq:IBpoissonlambda} becomes a sum of point charges,
 \begin{equation}
-  \nabla^2 u = f_{\text{dom}} + \sum_{k=0}^{N_{ib}-1} q_k\,
+  \nabla^2 u = f + \sum_{k=0}^{N_{ib}-1} q_k\,
   \delta(\mathbf{x} - \mathbf{X}_k),
   \qquad q_k \approx \lambda(s_k)\,\Delta s_k,
   \label{eq:IBpoissonq}
@@ -159,7 +143,7 @@ $g_k = g(\theta_k)$.
 \index{immersed boundary method!regularized delta function}
 
 A classic delta function cannot be represented on a grid. We will replace it
-the Gaussian 
+the Gaussian
 
 \begin{equation}
   \delta_a(x, y) = \frac{1}{2\pi a^2}\,
@@ -174,7 +158,7 @@ $\Delta x \to 0$, $\delta_a$ becomes narrower and taller and approaches the
 true delta function. Using a Gaussian in this way is the idea behind the
 \emph{force coupling method} \parencite{maxeyPatel2001}, and the Gaussian delta function
 is the only part of this chapter that differs from Peskin's version of the
-method. 
+method.
 
 On the grid, integrals become sums. The property we need most is that the
 discrete version of $\int \delta_a(x - X)\,dx = 1$ holds no matter where
@@ -264,9 +248,9 @@ The \textbf{interpolation operator} $J$ interpolates a grid function onto the im
 
 Spreading is the discrete version of the sum of delta functions in
 \eqref{eq:IBpoissonq}. Interpolation is the discrete version of
-$u(\mathbf{X}_k) = \iint u(\mathbf{x})\,\delta(\mathbf{x} - \mathbf{X}_k)\,d\mathbf{x}$. Spreading turns the charges on the wire into the source of the potential on
-the grid, and interpolation reads the potential from the grid back at the
-wire. Both operators are linear. With the grid values
+$u(\mathbf{X}_k) = \iint u(\mathbf{x})\,\delta(\mathbf{x} - \mathbf{X}_k)\,d\mathbf{x}$. Spreading turns the charges on $\Gamma$ into a source on
+the grid, and interpolation reads the solution from the grid back at
+$\Gamma$. Both operators are linear. With the grid values
 flattened row-wise as in \eqref{eq:order}, $S$ is an $N^2 \times N_{ib}$
 matrix and $J$ is $N_{ib} \times N^2$.
 
@@ -276,10 +260,10 @@ matrix and $J$ is $N_{ib} \times N^2$.
 
 Now we can put the pieces together. We discretize \eqref{eq:IBpoissonq}
 with the five-point Laplacian of Section~\ref{sec:fivepoint}, replace the
-sum of delta functions with spreading, and replace the condition on the
-wire, $u(\mathbf{X}_k) = g_k$, with interpolation. Let $L$ be the
+sum of delta functions with spreading, and replace the condition on
+$\Gamma$, $u(\mathbf{X}_k) = g_k$, with interpolation. Let $L$ be the
 $N^2 \times N^2$ Laplacian \eqref{eq:2Dlaplacian-kron} with the wall values
-removed. Then the potential $\mathbf{u}$ and the charges $\mathbf{q}$ must
+removed. Then the solution $\mathbf{u}$ and the charges $\mathbf{q}$ must
 satisfy
 \begin{align}
   L\mathbf{u} - S\mathbf{q} &= \mathbf{f} + \mathbf{b},
@@ -288,10 +272,10 @@ satisfy
   \label{eq:IBsaddleBottom}
 \end{align}
 where $\mathbf{b}$ holds the boundary condition contributions of the wall values, as in
-\eqref{eq:2Ddir-typeI} and $\mathbf{f}$ holds $f_{\text{dom}}$. The first equation says the potential on the grid
-is produced by the domain forcing $f_{\text{dom}}$ and the charges on the wire. The second
-says that the potential read back at the wire must equal $g$. In our
-problem the box is grounded, so $\mathbf{b} = \mathbf{0}$. Stacking the
+\eqref{eq:2Ddir-typeI} and $\mathbf{f}$ holds $f$. The first equation says the solution on the grid
+is produced by the forcing $f$ and the charges on $\Gamma$. The second
+says that the solution read back at $\Gamma$ must equal $g$. In our
+problem the walls are held at zero, so $\mathbf{b} = \mathbf{0}$. Stacking the
 two equations gives the block system
 \begin{equation}
   \begin{bmatrix}
@@ -307,8 +291,8 @@ two equations gives the block system
   \end{bmatrix},
   \label{eq:IBsaddle}
 \end{equation}
-with $N^2 + N_{ib}$ unknowns: $N^2$ values of the potential on the grid and
-$N_{ib}$ charges on the wire.
+with $N^2 + N_{ib}$ unknowns: $N^2$ values of the solution on the grid and
+$N_{ib}$ charges on $\Gamma$.
 
 This system should look familiar. Compare \eqref{eq:IBsaddle} with the
 Stokes system \eqref{eq:stg-block}. In both, one of the unknowns (the
@@ -324,12 +308,12 @@ structure are called \emph{saddle point systems}.
 The spacing of the IB points affects both the accuracy of the solution and
 how hard the system \eqref{eq:IBsaddle} is to solve. If two IB points are
 much closer together than the kernel width $a$, a charge at one creates
-almost the same potential on the grid as a charge at the other. Their
+almost the same solution on the grid as a charge at the other. Their
 columns of $S$ are nearly identical, so the system cannot decide how to
 split the charge between them, and \eqref{eq:IBsaddle} becomes badly
-conditioned. On the other hand, each IB point controls the potential only
+conditioned. On the other hand, each IB point controls the solution only
 in a neighborhood about as wide as its kernel. If the IB points are too far
-apart, their kernels do not overlap and the potential can leak through the
+apart, their kernels do not overlap and the solution can leak through the
 gaps between them. Choosing the average spacing $\Delta s$ relative to
 $\Delta x$ (and to $a$) is therefore a balance between these two effects.
 
@@ -359,7 +343,7 @@ stacked vector $\mathbf{z} = [\mathbf{u}; \mathbf{q}]$ and returns
 Each piece is something we already know how to apply without a matrix:
 $L$ with the five-point stencil (as in \texttt{Apply\_Lap} of
 Section~\ref{sec:gmres-code}, in two dimensions instead of three), and $S$
-and $J$ directly from \eqref{eq:IBspread} and \eqref{eq:IBinterp}. 
+and $J$ directly from \eqref{eq:IBspread} and \eqref{eq:IBinterp}.
 \begin{remark}
 GMRES assumes the function it is given is \emph{linear}. Known data, such
 as $\mathbf{f}$, the wall values, and $\mathbf{g}$, belong on the
@@ -388,8 +372,8 @@ allowing a single outer iteration.
 \section{Numerical Implementation}
 \label{sec:IBcode}
 
-The code below sets up our problem with $f_{\text{dom}} = 0$ and $g = 1$, places IB
-points around the wire about $\Delta x$ apart, defines the Gaussian delta
+The code below sets up our problem with $f = 0$ and $g = 1$, places IB
+points around $\Gamma$ about $\Delta x$ apart, defines the Gaussian delta
 function, spreading, interpolation, and a matrix-free five-point
 Laplacian, and calls GMRES without restarts. The function that applies the
 saddle point matrix is left for you to write. The commented lines build
