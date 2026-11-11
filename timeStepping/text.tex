@@ -1,0 +1,583 @@
+\chapter{Time Stepping: Accuracy and Stability}
+\label{chpt:time}
+
+% ---------------------------------------------------------------------------
+% Placeholder for figures that have not been made yet. Replace each
+% \TSfigplaceholder{...} with \includegraphics once the figure exists.
+% ---------------------------------------------------------------------------
+\providecommand{\TSfigplaceholder}[1]{%
+  \fbox{\parbox[c][#1][c]{0.85\textwidth}{\centering\sffamily\small
+  \textbf{[Figure to be added]}}}}
+
+Every problem we have seen so far has been \emph{steady}, which means the unknown $\phi$ does not change with time. In this chapter, we will see how to handle problems where $\phi$ changes in time using
+\emph{time stepping} or \emph{time integration}. There are many time stepping methods, and each comes with its own costs. Two questions guide our comparison of them:
+\begin{enumerate}
+  \item \textbf{Accuracy.} How fast does the error shrink as the time step $\Delta t$ is made smaller?
+  \item \textbf{Stability.} Does the numerical solution stay bounded at all, or can it blow up even when the true solution decays?
+\end{enumerate}
+Answering both lets us weigh the cost of each method against what it gives us.
+Our model problem will be the heat equation, the parabolic member of the three
+classic PDEs introduced in Chapter~\ref{chpt:intro2Classs}.
+\index{time stepping}
+
+\section{The Heat Equation}
+\label{sec:ts-heat}
+
+Let $\Omega = [a,b]\times[c,d]\subset\mathbb{R}^2$ and
+let $\phi(x,y,t)$ be temperature. We solve for $\phi$ satisfying
+\begin{equation}
+  \frac{\partial \phi}{\partial t} = k\,\nabla^2\phi + f(x,y,t),
+  \qquad (x,y)\in\Omega,\quad t > 0,
+  \label{eq:ts-heat}
+\end{equation}
+where $k>0$ is the diffusivity (i.e., how quickly the heat spreads) and $f$ is a known forcing function (i.e., a heat source/sink). Unlike the
+steady problems of earlier chapters, the solution requires
+\begin{itemize}
+  \item an \textbf{initial condition}, $\phi(x,y,0) = \phi_0(x,y)$ for all $(x,y)\in\Omega$, and
+  \item \textbf{boundary conditions} on $\partial\Omega$ for every $t>0$, exactly as in
+        Section~\ref{sec:2Dbcs}, except the boundary data may now depend on time.
+\end{itemize}
+\index{heat equation}\index{diffusion equation}\index{initial condition}
+
+Equation~\eqref{eq:ts-heat} is also called the \emph{diffusion equation}, because
+temperature is only one example. The quantity $\phi$ can be many things: temperature (heat), the concentration of a
+dissolved chemical, the density of a pollutant in the air, or even the density
+of people wandering randomly around a room. In every case, the Laplacian moves
+$\phi$ from where there is more of it to where there is less, so the heat
+equation \emph{smooths things out}. Sharp features are rounded off, peaks
+flatten, and in some cases the solution relaxes toward a steady state.
+
+\subsection{A Random Walk}
+\label{sec:ts-walk}
+\index{random walk}
+
+Why does diffusion look like a Laplacian? Consider a person who has had a bit
+too much to drink and is walking along a line, starting from the point $x_0$.
+Every $\Delta t$ seconds they stumble a distance $\Delta x$, either to the right
+with probability $p = 0.5$, or to the left with probability $1-p = 0.5$. A single walker's
+path is random and jagged, as seen in the left panel of Figure~\ref{fig:ts-walk}. However, if we start $N_w$ walkers at
+the same point $x_0$ and let them all stumble independently, we can describe the
+\emph{distribution} of their positions at a given time. Let $P(t,x)$ be the
+probability of finding a walker at position $x$ at time $t$. To be at $x$ at
+time $t + \Delta t$, a walker must have been at $x - \Delta x$ and stumbled
+right, or at $x + \Delta x$ and stumbled left, so
+\begin{equation}
+  P(t + \Delta t, x) = \tfrac12\,P(t, x - \Delta x) + \tfrac12\,P(t, x + \Delta x).
+  \label{eq:ts-master}
+\end{equation}
+Taylor expanding both sides of \eqref{eq:ts-master}, the way we did for finite
+differences in Section~\ref{sec:secondderiv}, the left-hand side expands in time,
+\begin{equation*}
+  P(t + \Delta t, x) = P + \Delta t\,\frac{\partial P}{\partial t}
+  + \frac{\Delta t^2}{2}\,\frac{\partial^2 P}{\partial t^2}
+  + \mathcal{O}(\Delta t^3),
+\end{equation*}
+and the two terms on the right-hand side expand in space,
+\begin{align*}
+  P(t, x + \Delta x) &= P + \Delta x\,\frac{\partial P}{\partial x}
+  + \frac{\Delta x^2}{2}\,\frac{\partial^2 P}{\partial x^2}
+  + \frac{\Delta x^3}{6}\,\frac{\partial^3 P}{\partial x^3}
+  + \frac{\Delta x^4}{24}\,\frac{\partial^4 P}{\partial x^4}
+  + \mathcal{O}(\Delta x^5), \\
+  P(t, x - \Delta x) &= P - \Delta x\,\frac{\partial P}{\partial x}
+  + \frac{\Delta x^2}{2}\,\frac{\partial^2 P}{\partial x^2}
+  - \frac{\Delta x^3}{6}\,\frac{\partial^3 P}{\partial x^3}
+  + \frac{\Delta x^4}{24}\,\frac{\partial^4 P}{\partial x^4}
+  + \mathcal{O}(\Delta x^5),
+\end{align*}
+where $P$ and its derivatives on the right are all evaluated at $(t,x)$. Averaging
+the two spatial expansions, the odd derivatives cancel, just as for the central
+difference \eqref{eq:fdCentral}:
+\begin{equation*}
+  \tfrac12\,P(t, x - \Delta x) + \tfrac12\,P(t, x + \Delta x)
+  = P + \frac{\Delta x^2}{2}\,\frac{\partial^2 P}{\partial x^2}
+  + \frac{\Delta x^4}{24}\,\frac{\partial^4 P}{\partial x^4}
+  + \mathcal{O}(\Delta x^6).
+\end{equation*}
+Setting the two sides equal, cancelling $P$, and dividing by $\Delta t$ gives
+\begin{equation}
+  \frac{\partial P}{\partial t}
+  = \frac{\Delta x^2}{2\,\Delta t}\,\frac{\partial^2 P}{\partial x^2}
+  \underbrace{- \frac{\Delta t}{2}\,\frac{\partial^2 P}{\partial t^2}
+  + \frac{\Delta x^4}{24\,\Delta t}\,\frac{\partial^4 P}{\partial x^4}
+  + \cdots}_{\text{higher-order terms}} = \frac{\Delta x^2}{2\,\Delta t}\,\frac{\partial^2 P}{\partial x^2}
+  + \text{(higher-order terms)}.
+  \label{eq:ts-walkheat}
+\end{equation}
+Apart from the higher-order terms, this is the heat equation in one dimension, with diffusivity
+$k = \Delta x^2 / (2\Delta t)$.
+
+\begin{figure}[htbp]
+  \centering
+  \TSfigplaceholder{5cm}
+  \caption{Left: the position of a few random walkers plotted against time, each taking steps of $\pm\Delta x$ every $\Delta t$, with vertical lines marking $t = 1$ and $t = 10$. Right: the distribution $P(t,x)$ of many walkers' positions (as histograms, i.e.\ data) at $t=1$ and $t=10$, with the corresponding solutions of the heat equation \eqref{eq:ts-walkheat} drawn as curves. The later distribution should be visibly wider and shorter.}
+  \label{fig:ts-walk}
+\end{figure}
+
+The higher-order terms of \eqref{eq:ts-walkheat} are negligible when $P$ barely changes over a single step. When does that happen? We can think of our drunk walkers are molecules moving randomly. At the macroscopic level, the amount the individual molecules change with space ($\Delta x$) with respect to time ($\Delta t$) are very small. So
+let's consider \eqref{eq:ts-walkheat} as $\Delta x \to 0$ and $\Delta t \to 0$.
+\begin{itemize}
+  \item If $\Delta t \propto \Delta x$, the coefficient behaves like $\Delta x \to 0$
+        and the limit is $\partial P/\partial t = 0$: the walkers never spread.
+  \item If $\Delta t \propto \Delta x^2$, the coefficient stays fixed, and choosing
+        $\Delta t = \Delta x^2/(2k)$ gives the heat equation with diffusivity $k$.
+  \item If $\Delta t \propto \Delta x^3$, the coefficient behaves like
+        $1/\Delta x \to \infty$: the walkers spread infinitely far in any
+        positive time.
+\end{itemize}
+Only $\Delta t \propto \Delta x^2$ gives a finite, nonzero limit. At this scaling, the higher-order terms of \eqref{eq:ts-walkheat} go to zero. 
+
+\begin{remark}
+Keep the scaling $\Delta t \sim \Delta x^2$ in mind; it will reappear in
+Section~\ref{sec:ts-stability}.
+\end{remark}
+\index{diffusive scaling}
+
+
+\begin{figure}[htbp]
+  \centering
+  \TSfigplaceholder{4.5cm}
+  \caption{A probability distribution $P(t,x)$ obtained from many random walkers, plotted at three times (e.g.\ $t=0$, $t\approx 1.3$, $t\approx 11$). The earliest distribution is narrow and noisy; later ones are progressively wider, flatter, and smoother. Each time should use a distinct color \emph{and} line style.}
+  \label{fig:ts-smoothing}
+\end{figure}
+
+\section{Exact Solution}
+\label{sec:ts-mol}
+
+With the random walk as motivation, we return to the two-dimensional heat
+equation \eqref{eq:ts-heat}. We already know how to spatially discretize the Laplacian $\nabla^2$. Let's consider this problem on a Type~I grid with Dirichlet boundary conditions on the domain $\Omega = [0,\ell]^2$ such that for $N$ points,
+\begin{equation}
+  x_i = i\,\Delta x, \quad y_j = j\,\Delta x, \qquad i,j = 1,\dots,N,
+  \qquad \Delta x = \frac{\ell}{N+1}.
+  \label{eq:ts-grid}
+\end{equation}
+We can discretize \eqref{eq:ts-heat} in terms of the Laplacian $L$ and flatten the unknown field $\boldsymbol{\phi}$ to obtain a large system of ordinary differential equations (ODEs),
+\begin{equation}
+  \frac{d\boldsymbol{\phi}}{dt} = k\,L\,\boldsymbol{\phi} + \mathbf{g}(t),
+  \qquad \boldsymbol{\phi}(0) = \boldsymbol{\phi}_0,
+  \label{eq:ts-ode}
+\end{equation}
+where $\mathbf{g}(t)$ collects the forcing $f$ evaluated at the grid points
+and the boundary contributions (which now may change in time). 
+
+\begin{remark}
+Note we have separated the problem into two independent choices: how
+to discretize space and how to step in time. The spatial error and the
+temporal error then add together, just as the discretization and solver errors did in
+Section~\ref{sec:gmres-tol}.
+\end{remark}
+
+Before discretizing time, it helps to look at the exact solution of
+\eqref{eq:ts-ode}. Let $k=1$ and $\mathbf{g}=\mathbf{0}$. For a scalar
+ODE $y' = \lambda y$, we would write $y(t) = e^{\lambda t}y(0)$. The exact solution to \eqref{eq:ts-ode} is then
+\begin{equation}
+  \boldsymbol{\phi}(t) = e^{tL}\,\boldsymbol{\phi}_0,
+  \qquad
+  e^{tL} = I + tL + \frac{t^2}{2}L^2 + \frac{t^3}{3!}L^3 + \cdots,
+  \label{eq:ts-matexp}
+\end{equation}
+where the matrix exponential is defined by its Taylor series, which converges far too slowly for this to be a practical solution. Since $L$ is symmetric, it can be decomposed as
+\begin{equation}
+  L = P\,D\,P^{\mathsf T},
+  \qquad D = \operatorname{diag}(\lambda_1,\lambda_2,\dots,\lambda_n),
+  \label{eq:ts-diag}
+\end{equation}
+where the columns of $P$ are the eigenvectors and $\lambda_m$ the eigenvalues of $L$. Let $\mathbf{y} = P^{\mathsf T}\boldsymbol{\phi}$. Multiplying
+$\boldsymbol{\phi}' = kL\boldsymbol{\phi}$ by $P^{\mathsf T}$ gives
+$\mathbf{y}' = kD\mathbf{y}$. Each row of this system represents the scalar equation
+$$y_m' = k\lambda_m\,y_m$$. 
+Defining $\hat{\lambda}_m = k \lambda_m$, we can consider one of these scalar equations as
+\begin{equation}
+  \frac{dy_m}{dt} = \hat{\lambda}_m\,y_m, \qquad y_m(0) = y_m^0,
+  \qquad\text{with exact solution}\qquad y_m(t) = e^{\hat{\lambda}_m t}\,y_m^0.
+  \label{eq:ts-test}
+\end{equation}
+
+\begin{remark}
+If we understand what a time stepper does to \eqref{eq:ts-test} for one
+eigenvalue $\lambda_m$, we understand what it does to the whole system, one
+eigenvalue at a time. Each of the following time steppers, applied to
+$\boldsymbol{\phi}' = kL\boldsymbol{\phi}$, is the same as applying it to every $y_m$
+separately.
+\end{remark}
+
+This reduces the question to what the biggest $\lambda$ is. For the system we have defined thus far, the eigenvalues are
+\begin{equation}
+  \lambda_{p,q} = -\frac{4}{\Delta x^2}\left[
+  \sin^2\!\left(\frac{p\pi\Delta x}{2\ell}\right) +
+  \sin^2\!\left(\frac{q\pi\Delta x}{2\ell}\right)\right],
+  \qquad p,q = 1,\dots,N.
+  \label{eq:ts-eigs}
+\end{equation}
+\index{Laplacian!eigenvalues}
+Every eigenvalue is real and negative, so every mode of the true solution decays.
+The eigenvalue of largest magnitude belongs to the most oscillatory mode
+$p = q = N$ (a checkerboard), and since the $\sin^2$ terms are then nearly one,
+\begin{equation}
+  \lambda_{\max} \approx -\frac{8}{\Delta x^2}.
+  \label{eq:ts-lammax}
+\end{equation}
+We have thus defined the largest possible eigenvalue, which we help us with our stability analysis for each temporal scheme.
+
+
+\section{Forward and Backward Euler}
+\label{sec:ts-euler}
+\index{forward Euler}\index{backward Euler}
+
+Discretization of time is very similar to that for space. Consider the time interval $[0,T]$ evaluated over $N_t$ equally spaced points, such that
+$\Delta t = T/N_t$. Then, we can define time levels, or evaluations of the system at specific times, as
+\begin{equation}
+  t^n = n\,\Delta t, \qquad n = 0,1,\dots,N_t,
+  \qquad \boldsymbol{\phi}^n \approx \boldsymbol{\phi}(t^n).
+  \label{eq:ts-levels}
+\end{equation}
+Superscripts denote the time level, while subscripts still denote the
+grid point, so $\phi^n_{i,j} \approx \phi(x_i, y_j, t^n)$. The simplest approximation of the
+time derivative is the first-order difference
+\[
+  \frac{d\boldsymbol{\phi}}{dt} \approx \frac{\boldsymbol{\phi}^{n+1} - \boldsymbol{\phi}^n}{\Delta t},
+\]
+and identical to Section~\ref{sec:firstderiv}), we will define forward and backwards approximations of this derivative.
+
+\paragraph{Forward Euler.} Evaluate $\mathbf{F}$ at the \emph{known} level $t^n$:
+\begin{equation}
+  \frac{\boldsymbol{\phi}^{n+1} - \boldsymbol{\phi}^n}{\Delta t} = \mathbf{F}(t^n,\boldsymbol{\phi}^n)
+  \quad\Longrightarrow\quad
+  \boxed{\boldsymbol{\phi}^{n+1} = \left(I + \Delta t\,k L\right)\boldsymbol{\phi}^n + \Delta t\,\mathbf{g}(t^n).}
+  \label{eq:ts-FE}
+\end{equation}
+Each step is a sparse matrix-vector multiplication. 
+\index{explicit method}
+
+\paragraph{Backward Euler.} Evaluate $\mathbf{F}$ at the \emph{unknown} level $t^{n+1}$:
+\begin{equation}
+  \frac{\boldsymbol{\phi}^{n+1} - \boldsymbol{\phi}^n}{\Delta t} = \mathbf{F}(t^{n+1},\boldsymbol{\phi}^{n+1})
+  \quad\Longrightarrow\quad
+  \boxed{\left(I - \Delta t\,k L\right)\boldsymbol{\phi}^{n+1} = \boldsymbol{\phi}^n + \Delta t\,\mathbf{g}(t^{n+1}).}
+  \label{eq:ts-BE}
+\end{equation}
+Now each step requires a linear \emph{solve}. A solve is going to be more expensive than a multiplication, so there must be a tradeoff that makes backward Euler useful. Finding that tradeoff is the goal of the next two sections.
+\index{implicit method}
+
+\begin{remark}
+A method in which the new value is given
+directly by known values is called \emph{explicit}. A method whose new value is
+defined only by unknown values is called \emph{implicit}.
+\end{remark}
+
+
+\begin{remark}
+Starting from $\boldsymbol{\phi}^0 = \boldsymbol{\phi}_0$, it takes exactly
+$N_t$ steps to reach $\boldsymbol{\phi}^{N_t} \approx \boldsymbol{\phi}(T)$. A loop that runs one step too many or too
+few compares your solution at $T \pm \Delta t$ with the exact solution at $T$, an error that looks like a first-order
+method no matter what you implemented. Likewise, if $\Delta t$ does not divide $T$
+evenly, you can never land on $T$. Compute the time of each level as $t^n = n\Delta t$
+rather than repeatedly adding $\Delta t$, which accumulates round-off.
+\end{remark}
+
+
+\section{Accuracy}
+\label{sec:ts-accuracy}
+\index{order of accuracy}
+
+To compare the two methods, apply both to the test equation \eqref{eq:ts-test}. Forward Euler gives
+$y^{n+1} = (1 + \Delta t\lambda)\,y^n$ and backward Euler gives
+$(1-\Delta t\lambda)\,y^{n+1} = y^n$. Repeating either $n$ times, we can
+write the \emph{exact} solutions of the two approximations,
+\begin{align}
+  \text{exact:} \qquad & y(t^n) = e^{\lambda t^n}\,y^0, \label{eq:ts-exactscalar}\\
+  \text{FE:}    \qquad & y^n = \left(1 + \Delta t\,\lambda\right)^n y^0, \label{eq:ts-FEscalar}\\
+  \text{BE:}    \qquad & y^n = \left(\frac{1}{1 - \Delta t\,\lambda}\right)^n y^0. \label{eq:ts-BEscalar}
+\end{align}
+The error of forward Euler at $t^n$, measured relative to the size of the initial data, is
+\begin{equation}
+  \frac{|y^n - y(t^n)|}{|y^0|} = \left|\left(1 + \Delta t\lambda\right)^n - e^{\lambda t^n}\right|
+  = \frac12\,\lambda^2\,t^n\,e^{\lambda t^n}\,\Delta t + \mathcal{O}(\Delta t^2).
+  \label{eq:ts-FEerror}
+\end{equation}
+We will see in the next section what can go wrong.
+The error is proportional to $\Delta t$, so forward Euler is first-order
+accurate.
+
+
+\begin{remark}
+The test equation gives us exact formulas, but for a general method we use the
+method of manufactured solutions.
+\end{remark}
+
+\begin{definition}[Local truncation error]
+The \emph{local truncation error} $\tau^n$ of a time stepper is the error accumulated from the iterative scheme starting from an exact solution per unit of time. \end{definition}
+\index{local truncation error}\index{global error}
+
+For forward Euler, $\tau^n = \frac{\boldsymbol{\phi}(t^{n+1})-\boldsymbol{\phi}(t^n)}{\Delta t} -
+\mathbf{F}(t^n,\boldsymbol{\phi}(t^n)) = \frac{\Delta t}{2}\boldsymbol{\phi}''(t^n) + \cdots$,
+which is exactly the forward difference error \eqref{eq:fdFO1}. 
+
+
+
+The
+local errors made at each of the $N_t = T/\Delta t$ steps accumulate into \textit{global error}. If $\tau^n = \mathcal{O}(\Delta t^p)$ and
+the method is \textbf{stable}, then the \textit{global error} at a fixed time $T$ is also
+$\mathcal{O}(\Delta t^p)$ and the method is said to be \emph{$p$-th order accurate}. If the method is unstable, global error becomes unbounded and your system will not converge.
+
+\subsection{Measuring the Order of Accuracy}
+\label{sec:ts-measure}
+\index{convergence study}
+
+In practice, we check the order of a time stepper numerically. We use a manufactured solution that now also depends on time, compute the solution at a fixed
+final time $T$ for a sequence of time steps, and measure the relative error
+\begin{equation}
+  \text{Err}(\Delta t) =
+  \frac{\norm{\boldsymbol{\phi}^{N_t} - \boldsymbol{\phi}_{\text{exact}}(T)}}
+       {\norm{\boldsymbol{\phi}_{\text{exact}}(T)}}.
+  \label{eq:ts-relerr}
+\end{equation}
+
+
+\begin{figure}[htbp]
+  \centering
+  \TSfigplaceholder{6cm}
+  \caption{A convergence study for backward Euler on the unforced test problem $\phi = e^{-2kt}\sin(x)\sin(y)$ on $[0,2\pi]^2$. Relative error \eqref{eq:ts-relerr} at a fixed $T$ versus $\Delta t$ on log-log axes for two spatial resolutions $N$, drawn with distinct markers and colors, with a dashed $\mathcal{O}(\Delta t)$ reference line. For small $\Delta t$ each curve should flatten at a level set by the spatial error, with the finer grid flattening lower.}
+  \label{fig:ts-convergence}
+\end{figure}
+
+
+
+\section{Stability}
+\label{sec:ts-stability}
+\index{stability}
+
+Look again at the error \eqref{eq:ts-FEerror} and the test equation with
+$\lambda < 0$, which we know is the case for every eigenvalue of the
+Laplacian. The exact solution $e^{\lambda t}y^0$ decays to zero as $t\to\infty$, so we expect the numerical approximation to as well.
+
+Consider the forward Euler case, we only see a decay in the solution when 
+\begin{equation}
+  \left|1 + \Delta t\,\lambda\right| < 1.
+  \label{eq:ts-FEstab}
+\end{equation}
+This is called a \emph{stability restriction} and it must hold for \emph{every}
+eigenvalue. Recalling that we determined the maximum eigenvalue as $\lambda = k\lambda_{\max} \approx -8k/\Delta x^2$ in \eqref{eq:ts-lammax}, 
+
+\begin{align*}
+  -1 &< 1 + \Delta t\left(\frac{-8k}{\Delta x^2}\right) < 1 \\
+  -2 &< \Delta t\left(\frac{-8k}{\Delta x^2}\right) < 0 \\
+  \frac14 &> \frac{k\,\Delta t}{\Delta x^2} > 0,
+\end{align*}
+so forward Euler for the two-dimensional heat equation requires
+\begin{equation}
+  \boxed{\frac{4\,k\,\Delta t}{\Delta x^2} < 1.}
+  \label{eq:ts-FElimit}
+\end{equation}
+If this relation holds, the error \eqref{eq:ts-FEerror} decays along with the
+solution for every mode. If it does not, the most oscillatory mode is multiplied
+by a number less than $-1$ every step, flips sign, grows, and soon swamps
+the solution with a growing checkerboard pattern. Notice the scaling: $\Delta t$ must shrink like $\Delta x^2$, the
+diffusive scaling of Section~\ref{sec:ts-walk}.
+\index{stability restriction}
+
+\begin{figure}[htbp]
+  \centering
+  \TSfigplaceholder{5.5cm}
+  \caption{Forward Euler applied to the test equation $y' = \lambda y$ with $\lambda<0$. The exact solution (curve) is compared with forward Euler (symbols) for three time steps: $|1+\Delta t\lambda|$ well below one (smooth decay), $-1 < 1+\Delta t\lambda < 0$ (decay with alternating sign), and $1+\Delta t\lambda < -1$ (oscillating growth). Backward Euler at the largest time step may be added for comparison.}
+  \label{fig:ts-decay}
+\end{figure}
+
+\paragraph{Backward Euler.} Repeating the argument with \eqref{eq:ts-BEscalar}, backward Euler decays only if
+\begin{equation}
+  \left|\frac{1}{1 - \Delta t\,\lambda}\right| < 1.
+  \label{eq:ts-BEstab}
+\end{equation}
+For $\lambda<0$ and any $\Delta t > 0$, the denominator $1 - \Delta t\lambda$ is
+larger than one, so \eqref{eq:ts-BEstab} always holds. We end up with
+\emph{no} restriction on $\Delta t$ at all, which we refer to as
+\emph{unconditionally stable}.
+\index{unconditional stability}
+
+
+\subsection{The Tradeoff Between Forward and Backward Euler}
+\label{sec:ts-tradeoff}
+
+Recall that backward Euler requires a linear solve, making it more expensive than forward. There is a tradeoff between the two, however, and it is related to their stabilities.
+\begin{itemize}
+  \item Backward Euler is an \textbf{implicit} method. Each step needs a linear solve, but there are no (or few) restrictions on $\Delta t$ for stability.
+  \item Forward Euler is an \textbf{explicit} method. There is no system to solve, so each step is very fast, but $\Delta t$ is restricted by \eqref{eq:ts-FElimit}.
+\end{itemize}
+
+\textit{Stability is not accuracy.} Backward Euler is stable for an enormous $\Delta t$, but
+its answer will be inaccurate. The point is that with an implicit
+method, $\Delta t$ can be chosen by the accuracy you need, while with an explicit
+method $\Delta t$ may be forced far smaller than accuracy requires.
+
+
+
+
+\section{Higher-Order Time Steppers}
+\label{sec:ts-higher}
+
+Stability tells us which time steps we may take, and accuracy tells us how good
+the answer is. Both Euler methods are only first-order accurate. Just as the central difference of
+Section~\ref{sec:central} improved on the one-sided differences, we can do better
+in time. We describe four methods for the general system
+$\boldsymbol{\phi}' = \mathbf{F}(t,\boldsymbol{\phi})$, where we have defined $\mathbf{F}(t,\boldsymbol{\phi}) = kL\boldsymbol{\phi} + \mathbf{g}(t)$ for the heat equation.
+
+\subsection{Crank--Nicolson}
+\label{sec:ts-CN}
+\index{Crank--Nicolson}
+
+Instead of evaluating $\mathbf{F}$ at one end of the step, average the two ends:
+\begin{equation}
+  \frac{\boldsymbol{\phi}^{n+1} - \boldsymbol{\phi}^n}{\Delta t}
+  = \frac12\left[\mathbf{F}(t^n,\boldsymbol{\phi}^n) + \mathbf{F}(t^{n+1},\boldsymbol{\phi}^{n+1})\right].
+  \label{eq:ts-CN}
+\end{equation}
+This is the trapezoidal rule, known as the \emph{Crank--Nicolson} method when applied to PDEs. The difference quotient is now
+\emph{centered} at $t^{n+1/2}$, which is the source of its extra order of accuracy (recall \eqref{eq:fdCentral}!). Since $\boldsymbol{\phi}^{n+1}$ appears on the
+right-hand side, it is implicit.
+
+
+\subsection{Explicit Midpoint (RK2)}
+\label{sec:ts-RK2}
+\index{Runge--Kutta methods}\index{explicit midpoint method}
+
+Another way to center the step at $t^{n+1/2}$ is to first take half a forward Euler step
+to estimate the solution at the midpoint, and then use the slope there for the full step:
+\begin{align}
+  \boldsymbol{\phi}^{*} &= \boldsymbol{\phi}^n + \frac{\Delta t}{2}\,\mathbf{F}(t^n, \boldsymbol{\phi}^n),
+  \label{eq:ts-RK2a}\\
+  \boldsymbol{\phi}^{n+1} &= \boldsymbol{\phi}^n + \Delta t\,\mathbf{F}\!\left(t^n + \tfrac{\Delta t}{2},\, \boldsymbol{\phi}^{*}\right).
+  \label{eq:ts-RK2b}
+\end{align}
+The intermediate value $\boldsymbol{\phi}^*$ is called a \emph{stage}. Methods built from several
+stages are \emph{Runge--Kutta} (RK) methods. This one, the explicit midpoint method, is a
+second-order RK method (RK2). It requires no solve, so it is explicit.
+
+
+\subsection{BDF2}
+\label{sec:ts-BDF2}
+\index{BDF methods}\index{multistep methods}
+
+Runge--Kutta methods use extra stages within one step. \emph{Multistep} methods instead
+reuse the solution from earlier steps. The \emph{backward differentiation formulas} (BDF) approximate
+$d\boldsymbol{\phi}/dt$ at the new level $t^{n+1}$ by a one-sided difference through
+several past levels, and evaluate $\mathbf{F}$ at $t^{n+1}$, as backward Euler does
+(backward Euler is BDF1). The second-order member is
+\begin{equation}
+  \frac{3\boldsymbol{\phi}^{n+1} - 4\boldsymbol{\phi}^{n} + \boldsymbol{\phi}^{n-1}}{2\,\Delta t}
+  = \mathbf{F}(t^{n+1},\boldsymbol{\phi}^{n+1}).
+  \label{eq:ts-BDF2}
+\end{equation}
+
+BDF2 cannot start on its own. To compute $\boldsymbol{\phi}^1$ it needs
+$\boldsymbol{\phi}^{0}$ and $\boldsymbol{\phi}^{-1}$, and the latter does not exist. The first step
+must be taken with a one-step method (or, when testing with a manufactured
+solution, $\boldsymbol{\phi}^1$ can be taken from the exact solution).
+
+
+
+\subsection{Adaptive Runge--Kutta (RK45)}
+\label{sec:ts-RK45}
+\index{adaptive time stepping}
+
+Rather than fixing $\Delta t$, \emph{adaptive} methods choose it as they go. The popular
+RK45 (Dormand--Prince) pair computes a fourth- and a fifth-order approximation from the
+same stages. The difference of these approximations estimates the error of the step, and $\Delta t$ is grown or shrunk to keep that estimate
+below a user-supplied tolerance. Writing one is tedious, so we use the
+open implementations \texttt{ode45} in MATLAB and
+\texttt{scipy.integrate.solve\_ivp(..., method='RK45')} in python. Both take a function
+that evaluates $\mathbf{F}(t,\boldsymbol{\phi})$, the time interval, the initial condition, and
+relative and absolute tolerances, and both can report how many times $\mathbf{F}$ was
+evaluated.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|>{\raggedright\arraybackslash}p{3.6cm}|>{\raggedright\arraybackslash}p{2.2cm}|>{\raggedright\arraybackslash}p{2.2cm}||>{\raggedright\arraybackslash}p{4.2cm}|}
+        \hline
+        \textit{Method} & \textit{Type} & \textit{Order} & \textit{Stable for all $z<0$?} \\
+        \hline
+        Forward Euler \eqref{eq:ts-FE} & explicit & 1 & no, only $-2 \le z \le 0$ \\
+        Backward Euler \eqref{eq:ts-BE} & implicit & 1 & yes \\
+        Crank--Nicolson \eqref{eq:ts-CN} & implicit & 2 & yes \\
+        Explicit midpoint \eqref{eq:ts-RK2b} & explicit & 2 & no, only $-2 \le z \le 0$ \\
+        BDF2 \eqref{eq:ts-BDF2} & implicit & 2 & yes \\
+        RK45 & explicit & 4/5 (adaptive) & no, only about $-3.3 \le z \le 0$ \\
+        \hline
+    \end{tabular}
+    \caption{Summary of the time steppers in this chapter. Here $z = \Delta t\,\lambda$, where $\lambda$ is an eigenvalue of $kL$.}
+    \label{tab:ts-summary}
+\end{table}
+
+\section{Solving the Implicit Systems Efficiently}
+\label{sec:ts-solve}
+\index{implicit method!linear solves}
+
+Implicit methods buy their stability with a linear solve at every step, so the
+cost of that solve deserves attention. Backward Euler, Crank--Nicolson, and BDF2 all reduce each time step to a linear
+system of the form
+\begin{equation}
+  A\,\boldsymbol{\phi}^{n+1} = \mathbf{b}^n, \qquad n = 0,\dots,N_t-1,
+  \label{eq:ts-Axb}
+\end{equation}
+where $\mathbf{b}^n$ changes every step but, as long as $\Delta t$ is fixed, the matrix
+$A$ does \emph{not}. For backward Euler, $A = I - \Delta t\,kL$. We have to solve
+\eqref{eq:ts-Axb} thousands of times, so it pays to think about how.
+
+\paragraph{1) Use GMRES.} Solve each step with GMRES as in Chapter~\ref{chpt:GMRES},
+using the previous time level as the initial guess (Section~\ref{sec:gmres-x0}),
+\[
+  \boldsymbol{\phi}^{n+1} = \texttt{gmres}(A,\ \mathbf{b}^n,\ \text{guess} = \boldsymbol{\phi}^{n}).
+\]
+If $\Delta t$ is small, $\boldsymbol{\phi}^n$ is already very close to $\boldsymbol{\phi}^{n+1}$ and only a few
+iterations are needed. Recall from Section~\ref{sec:gmres-tol} that the tolerance should
+sit just below the other errors in the problem.
+
+\paragraph{2) Factor once, solve many times.} Since $A$ never changes, we can pay to
+factor it once, before the time loop, and then reuse the factors at every step. If $A$
+is \emph{symmetric positive definite} (SPD), it has a \emph{Cholesky factorization}
+\begin{equation}
+  A = R\,R^{\mathsf T},
+  \label{eq:ts-chol}
+\end{equation}
+where $R$ is lower triangular and called the \emph{Cholesky factor}. Then each solve
+$RR^{\mathsf T}\boldsymbol{\phi}^{n+1} = \mathbf{b}^n$ splits into two triangular solves,
+\begin{equation}
+  \left\{
+  \begin{aligned}
+    R\,\mathbf{z}^n &= \mathbf{b}^n && \text{($R$ lower triangular: forward substitution)},\\
+    R^{\mathsf T}\boldsymbol{\phi}^{n+1} &= \mathbf{z}^n && \text{($R^{\mathsf T}$ upper triangular: back substitution)},
+  \end{aligned}
+  \right.
+  \label{eq:ts-trisolve}
+\end{equation}
+each of which costs about as much as a multiplication by $R$.
+\index{Cholesky factorization}
+
+For the five-point Laplacian on an $N\times N$ grid with $n = N^2$ unknowns, a good factorization costs about $n^{3/2}$ operations and produces a factor with about $n\log n$ nonzeros,
+so each pair of triangular solves costs about $n\log n$. The factorization is paid once; the solves
+are paid every step.
+
+\begin{remark}
+The factor is only reusable while $A$ is unchanged. If $\Delta t$ changes, as in an
+adaptive method, or $k$ depends on time, the factorization must be redone.
+\end{remark}
+
+
+\section{Numerical Implementation}
+\label{sec:ts-code}
+
+The code below sets up the two-dimensional heat equation on $[0,2\pi]^2$ with Dirichlet
+conditions, using $N$ interior points per direction as in Chapter~\ref{chpt:GMRES}. It
+builds the Laplacian, factors an implicit matrix once before the time loop, and lays out the
+time loop with the bookkeeping of Section~\ref{sec:ts-euler}. The manufactured
+solution, the forcing (with boundary contributions), and the update performed in each time step are left for you to write.
+The backward Euler matrix is factored as an example; other implicit methods need their own matrix.
+
+\subsection{MATLAB}
+\lstinputlisting[language=matlab]{TimeStepping/code/heat_2d_timestep.m}
+
+\subsection{python}
+SciPy does not include a sparse Cholesky factorization, so instead we use
+the sparse $LU$ factorization package \texttt{scipy.sparse.linalg.factorized} that returns a
+function for repeated solves. Its cost behaves similarly for this problem.
+
+\lstinputlisting[language=python]{TimeStepping/code/heat_2d_timestep.py}
