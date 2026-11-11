@@ -35,27 +35,24 @@ has appeared in earlier chapters: the five-point Laplacian
 lecture notes \parencite{peskinNotes}.
 
 
+
+
+
 \begin{figure}[htbp]
-    \centering
-    \begin{subfigure}
-        \centering
-        \includegraphics[angle=90, width=1\linewidth]{IBM/images/bodyFittedExample.pdf}
-    \end{subfigure}
+  \centering
+  \includegraphics[angle=90, width=\linewidth]{IBM/images/bodyFittedExample.pdf}
 
-    \vspace{1em}
+  \vspace{1em}
 
-    \begin{subfigure}
-        \centering
-        \includegraphics[angle=90, width=1\linewidth]{IBM/images/ibExample.pdf}
-    \end{subfigure}
+  \includegraphics[angle=90, width=\linewidth]{IBM/images/ibExample.pdf}
   \caption{Two ways to discretize a fluid domain containing a closed
   curve on which a boundary condition is imposed. Top: a body-fitted
-  (unstructured) mesh whose edges conform to the curve. Bottom: a uniform
+  (unstructured) mesh whose edges conform to the curve (a NACA 2415
+  airfoil, meshed in Ansys Fluent \parencite{ansys}). Bottom: a uniform
   Cartesian grid with the curve drawn on top and represented by its own
   set of points (markers) that do not coincide with grid nodes.}
   \label{fig:IBbodyfitted}
 \end{figure}
-
 
 \begin{remark}
 Throughout this chapter, the term \emph{immersed boundary} refers to the
