@@ -314,10 +314,10 @@ the PDE solution, which maintains a discretization error of
 $\mathcal{O}(\Delta x^2)$. The GMRES iterate
 $\mathbf{u}_k$ adds a second, \emph{solver} error on top of that:
 \[
-  \underbrace{u(\mathbf{x}_{ijk}) - (\mathbf{u}_k)_{ijk}}_{\text{total error}}
-  = \underbrace{u(\mathbf{x}_{ijk}) - \mathbf{u}_{ijk}}_{\text{discretization}
+  \underbrace{u(\mathbf{x}) - \mathbf{u}_k}_{\text{total error}}
+  = \underbrace{u(\mathbf{x}) - \mathbf{u}}_{\text{discretization}
     \,\sim\,\Delta x^2}
-  + \underbrace{\mathbf{u}_{ijk} - (\mathbf{u}_k)_{ijk}}_{\text{solver}} .
+  + \underbrace{\mathbf{u} - \mathbf{u}_k}_{\text{solver}} .
 \]
 Driving the solver error far below the discretization error does not make the
 total error any smaller, it just costs iterations. If the
