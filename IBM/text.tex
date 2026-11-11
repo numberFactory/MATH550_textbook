@@ -189,6 +189,48 @@ The Gaussian is never exactly zero, so in principle every IB point
 touches every grid point. To make this more realistic and cost-effective, we would want to define a \textit{support} for each delta function so it only impacts subsets of the domain.
 \end{remark}
 
+\subsection{Peskin's Four-Point Kernel}
+
+\index{immersed boundary method!four-point kernel}
+\index{compact support}
+Peskin's original method uses a kernel with \emph{compact support}. His
+four-point kernel \parencite{peskin2002} is written in terms of the
+distance to a grid point measured in grid cells, $r = x/\Delta x$, as
+$\phi(r) = \Delta x\,\delta_h(x)$ with
+\begin{equation}
+  \phi(r) =
+  \begin{cases}
+    \dfrac{3 - 2|r| + \sqrt{1 + 4|r| - 4r^2}}{8}, & 0 \leq |r| \leq 1,\\[3mm]
+    \dfrac{5 - 2|r| - \sqrt{-7 + 12|r| - 4r^2}}{8}, & 1 \leq |r| \leq 2,\\[3mm]
+    0, & 2 \leq |r|,
+  \end{cases}
+  \label{eq:IBphi4}
+\end{equation}
+and $\delta_h(x,y) = \delta_h(x)\,\delta_h(y)$ in two dimensions. Rather
+than being chosen for its shape, \eqref{eq:IBphi4} is the unique function
+that satisfies the following conditions, where the sums run over all
+integers $j$ and must hold for every real $r$:
+\begin{enumerate}[label=(\roman*)]
+  \item $\phi(r)$ is continuous;
+  \item $\phi(r) = 0$ for $|r| \geq 2$;
+  \item $\displaystyle\sum_{j\ \mathrm{even}} \phi(r - j)
+        = \sum_{j\ \mathrm{odd}} \phi(r - j) = \frac{1}{2}$;
+  \item $\displaystyle\sum_{j} (r - j)\,\phi(r - j) = 0$;
+  \item $\displaystyle\sum_{j} \phi(r - j)^2 = \frac{3}{8}$.
+\end{enumerate}
+Each condition has a purpose. Continuity (i) keeps the interaction smooth
+as an IB point slides across the grid. Compact support (ii) means each IB
+point touches exactly a $4 \times 4$ block of grid points, which makes
+spreading and interpolation cheap. Adding the two sums in (iii) gives
+\eqref{eq:IBunity} exactly, so the total charge is conserved when it is
+spread; requiring the even and odd sums separately also prevents a
+checkerboard pattern that centered differences cannot see. Condition (iv)
+makes interpolation exact for linear functions. Condition (v) makes the
+interaction between two IB points depend (approximately) only on their
+distance apart, not on where they sit relative to the grid. The Gaussian
+satisfies (i), (iii), (iv), and (v) only approximately and does not
+satisfy (ii) at all; the choice between the two kernels trades smoothness
+against cost.
 
 \section{Spreading and Interpolation}
 \label{sec:IBspreadinterp}
